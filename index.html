@@ -3,170 +3,515 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>JFS AI Platform</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
-    color: #172033;
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
 }
 
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 240px;
-    background: #111827;
-    color: white;
-    padding: 24px 16px;
+button,input,select,textarea{
+    font:inherit;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 35px;
+button{
+    cursor:pointer;
 }
 
-.logo span {
-    display: block;
-    font-size: 12px;
-    opacity: .6;
-    margin-top: 5px;
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:245px;
+    background:#111827;
+    color:white;
+    padding:22px 15px;
+    z-index:20;
 }
 
-.menu {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.logo{
+    font-size:23px;
+    font-weight:800;
+    margin:3px 8px 5px;
 }
 
-.menu a {
-    color: #cbd5e1;
-    text-decoration: none;
-    padding: 12px 14px;
-    border-radius: 8px;
+.logo-sub{
+    font-size:12px;
+    color:#94a3b8;
+    margin:0 8px 30px;
 }
 
-.menu a:hover,
-.menu a.active {
-    background: #2563eb;
-    color: white;
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
 }
 
-.main {
-    margin-left: 240px;
-    padding: 30px;
+.menu button{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#cbd5e1;
+    text-align:left;
+    padding:12px 13px;
+    border-radius:9px;
+    transition:.2s;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.menu button:hover,
+.menu button.active{
+    background:#2563eb;
+    color:#fff;
 }
 
-.header h1 {
-    margin: 0;
+.main{
+    margin-left:245px;
+    min-height:100vh;
+    padding:28px;
 }
 
-.badge {
-    background: #dcfce7;
-    color: #166534;
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:25px;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 25px;
+.topbar h1{
+    margin:0;
+    font-size:30px;
 }
 
-.card {
-    background: white;
-    border-radius: 14px;
-    padding: 22px;
-    box-shadow: 0 3px 15px rgba(0,0,0,.06);
+.subtitle{
+    color:#64748b;
+    margin-top:7px;
 }
 
-.card small {
-    color: #64748b;
+.online{
+    background:#dcfce7;
+    color:#166534;
+    padding:9px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:bold;
 }
 
-.card h2 {
-    margin: 10px 0 0;
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:20px;
 }
 
-.panel {
-    background: white;
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 25px;
-    box-shadow: 0 3px 15px rgba(0,0,0,.06);
+.card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 3px 15px rgba(0,0,0,.06);
 }
 
-.panel h3 {
-    margin-top: 0;
+.card-label{
+    color:#64748b;
+    font-size:13px;
 }
 
-.tenant {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #e5e7eb;
-    padding: 16px 0;
+.card-number{
+    font-size:28px;
+    font-weight:800;
+    margin-top:8px;
 }
 
-.tenant:first-of-type {
-    border-top: none;
+.section{
+    background:white;
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 3px 15px rgba(0,0,0,.06);
 }
 
-.status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:18px;
 }
 
-.active {
-    background: #dcfce7;
-    color: #166534;
+.section h2{
+    margin:0;
+    font-size:20px;
 }
 
-.trial {
-    background: #fef3c7;
-    color: #92400e;
+.primary{
+    border:0;
+    background:#2563eb;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:bold;
 }
 
-@media(max-width: 900px) {
-    .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
+.primary:hover{
+    background:#1d4ed8;
+}
+
+.tenant{
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:17px;
+    margin-bottom:12px;
+}
+
+.tenant-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.tenant-name{
+    font-size:17px;
+    font-weight:800;
+}
+
+.tenant-id{
+    color:#64748b;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.tenant-info{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.info-chip{
+    background:#f1f5f9;
+    padding:6px 9px;
+    border-radius:7px;
+    font-size:12px;
+}
+
+.status{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.status.trial{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.status.active{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.status.expired{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.countdown{
+    margin-top:13px;
+    padding:10px;
+    background:#f8fafc;
+    border-radius:8px;
+    font-size:13px;
+}
+
+.tenant-actions{
+    margin-top:14px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:0;
+    border-radius:7px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.btn-blue{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.btn-green{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.btn-red{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.btn-gray{
+    background:#e2e8f0;
+    color:#334155;
+}
+
+.modules{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+}
+
+.module{
+    border:1px solid #e5e7eb;
+    border-radius:11px;
+    padding:18px;
+    background:#fff;
+}
+
+.module-icon{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.module-title{
+    font-weight:bold;
+}
+
+.module-text{
+    color:#64748b;
+    font-size:13px;
+    line-height:1.5;
+    margin-top:6px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+.form-group label{
+    font-size:13px;
+    font-weight:bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    padding:11px;
+    outline:none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#2563eb;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.65);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    background:white;
+    width:min(600px,100%);
+    max-height:90vh;
+    overflow:auto;
+    border-radius:15px;
+    padding:24px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.modal-header h2{
+    margin:0;
+}
+
+.close{
+    border:0;
+    background:#f1f5f9;
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    font-size:20px;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#64748b;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.notice{
+    background:#eff6ff;
+    border-left:4px solid #2563eb;
+    padding:14px;
+    border-radius:7px;
+    margin-bottom:18px;
+    line-height:1.5;
+}
+
+.table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.table th,
+.table td{
+    text-align:left;
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:13px;
+}
+
+.chat{
+    background:#f8fafc;
+    border-radius:10px;
+    padding:15px;
+}
+
+.chat-message{
+    padding:10px 13px;
+    border-radius:10px;
+    margin-bottom:8px;
+    max-width:80%;
+}
+
+.chat-user{
+    background:#dbeafe;
+    margin-left:auto;
+}
+
+.chat-ai{
+    background:white;
+    border:1px solid #e2e8f0;
+}
+
+.footer-note{
+    color:#94a3b8;
+    font-size:11px;
+    margin-top:25px;
+}
+
+@media(max-width:1000px){
+    .cards{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .main {
-        margin-left: 0;
-    }
-
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
+    .modules{
+        grid-template-columns:repeat(2,1fr);
     }
 }
 
-@media(max-width: 600px) {
-    .cards {
-        grid-template-columns: 1fr;
+@media(max-width:700px){
+    .sidebar{
+        position:relative;
+        width:100%;
+        padding:15px;
+    }
+
+    .logo-sub{
+        margin-bottom:15px;
+    }
+
+    .menu{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .main{
+        margin-left:0;
+        padding:16px;
+    }
+
+    .topbar{
+        align-items:flex-start;
+    }
+
+    .topbar h1{
+        font-size:24px;
+    }
+
+    .cards{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .modules{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+    .tenant-top{
+        flex-direction:column;
+    }
+}
+
+@media(max-width:430px){
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .menu{
+        grid-template-columns:1fr 1fr;
     }
 }
 </style>
@@ -176,129 +521,1151 @@ body {
 
 <aside class="sidebar">
 
-    <div class="logo">
-        JFS AI
-        <span>Technology Platform</span>
-    </div>
+    <div class="logo">JFS AI</div>
+    <div class="logo-sub">Technology Platform</div>
 
     <nav class="menu">
-        <a href="#" class="active">📊 Dashboard</a>
-        <a href="#">🏢 Tenants</a>
-        <a href="#">🤖 AI Agents</a>
-        <a href="#">💬 WhatsApp</a>
-        <a href="#">📚 Knowledge</a>
-        <a href="#">📅 Booking</a>
-        <a href="#">💰 Sales</a>
-        <a href="#">📈 Analytics</a>
-        <a href="#">🔐 License</a>
+        <button class="active" onclick="showPage('dashboard',this)">📊 Dashboard</button>
+        <button onclick="showPage('tenants',this)">🏢 Tenants</button>
+        <button onclick="showPage('agents',this)">🤖 AI Agents</button>
+        <button onclick="showPage('whatsapp',this)">💬 WhatsApp</button>
+        <button onclick="showPage('knowledge',this)">📚 Knowledge</button>
+        <button onclick="showPage('booking',this)">📅 Booking</button>
+        <button onclick="showPage('sales',this)">💰 Sales</button>
+        <button onclick="showPage('analytics',this)">📈 Analytics</button>
+        <button onclick="showPage('license',this)">🔐 License</button>
     </nav>
 
 </aside>
 
 <main class="main">
 
-    <div class="header">
+    <div class="topbar">
         <div>
-            <h1>JFS AI Dashboard</h1>
-            <p>AI Automation Platform untuk UMKM</p>
+            <h1>JFS AI Platform</h1>
+            <div class="subtitle">
+                Multi-tenant AI Automation Platform untuk UMKM
+            </div>
         </div>
 
-        <div class="badge">
+        <div class="online">
             ● Platform Online
         </div>
     </div>
 
-    <section class="cards">
 
-        <div class="card">
-            <small>Total Tenant</small>
-            <h2>1</h2>
-        </div>
+    <!-- DASHBOARD -->
 
-        <div class="card">
-            <small>Active</small>
-            <h2>0</h2>
-        </div>
+    <section id="page-dashboard" class="page active">
 
-        <div class="card">
-            <small>Trial</small>
-            <h2>1</h2>
-        </div>
+        <div class="cards">
 
-        <div class="card">
-            <small>Expired</small>
-            <h2>0</h2>
-        </div>
-
-    </section>
-
-    <section class="panel">
-
-        <h3>Tenant Management</h3>
-
-        <div class="tenant">
-
-            <div>
-                <strong>Fibo Laundry</strong>
-                <br>
-                <small>Tenant ID: FIBO001</small>
+            <div class="card">
+                <div class="card-label">Total Tenant</div>
+                <div class="card-number" id="totalTenant">0</div>
             </div>
 
-            <div class="status trial">
-                TRIAL • 3 HARI
+            <div class="card">
+                <div class="card-label">Active</div>
+                <div class="card-number" id="activeTenant">0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Trial</div>
+                <div class="card-number" id="trialTenant">0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Expired</div>
+                <div class="card-number" id="expiredTenant">0</div>
             </div>
 
         </div>
 
-        <div class="tenant">
 
-            <div>
-                <strong>Demo Tenant</strong>
-                <br>
-                <small>Tenant ID: DEMO001</small>
+        <section class="section">
+
+            <div class="section-header">
+                <h2>Tenant Management</h2>
+
+                <button class="primary" onclick="openModal()">
+                    + Add Tenant
+                </button>
             </div>
 
-            <div class="status active">
-                ACTIVE
+            <div id="dashboardTenants"></div>
+
+        </section>
+
+
+        <section class="section">
+
+            <div class="section-header">
+                <h2>JFS AI Modules</h2>
             </div>
 
-        </div>
+            <div class="modules">
+
+                <div class="module">
+                    <div class="module-icon">🤖</div>
+                    <div class="module-title">AI Admin</div>
+                    <div class="module-text">
+                        Customer service automation dengan AI.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">💬</div>
+                    <div class="module-title">JFS WhatsApp</div>
+                    <div class="module-text">
+                        Integrasi AI Agent dengan WhatsApp.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">JFS Knowledge</div>
+                    <div class="module-text">
+                        Knowledge base khusus setiap tenant.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">📅</div>
+                    <div class="module-title">JFS Booking</div>
+                    <div class="module-text">
+                        Otomatisasi booking dan appointment.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">💰</div>
+                    <div class="module-title">JFS Sales</div>
+                    <div class="module-text">
+                        Follow-up dan sales automation.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">📈</div>
+                    <div class="module-title">JFS Analytics</div>
+                    <div class="module-text">
+                        Monitoring aktivitas dan performa bisnis.
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
 
     </section>
 
-    <section class="panel">
 
-        <h3>JFS AI Modules</h3>
+    <!-- TENANTS -->
 
-        <p>🤖 AI Admin — Customer Service Automation</p>
-        <p>💬 JFS WhatsApp — WhatsApp AI Integration</p>
-        <p>📚 JFS Knowledge — Knowledge Base</p>
-        <p>📅 JFS Booking — Booking Automation</p>
-        <p>💰 JFS Sales — Sales Automation</p>
-        <p>📈 JFS Analytics — Business Analytics</p>
+    <section id="page-tenants" class="page">
+
+        <section class="section">
+
+            <div class="section-header">
+                <h2>All Tenants</h2>
+
+                <button class="primary" onclick="openModal()">
+                    + Add Tenant
+                </button>
+            </div>
+
+            <div id="tenantPageList"></div>
+
+        </section>
+
+    </section>
+
+
+    <!-- AI AGENTS -->
+
+    <section id="page-agents" class="page">
+
+        <section class="section">
+
+            <h2>AI Agents</h2>
+
+            <div class="notice">
+                AI Agent JFS akan menjadi otak otomatisasi customer.
+                Setiap tenant nantinya mempunyai konfigurasi AI Agent
+                sendiri berdasarkan Knowledge Base mereka.
+            </div>
+
+            <div class="modules">
+
+                <div class="module">
+                    <div class="module-icon">🤖</div>
+                    <div class="module-title">Customer Service Agent</div>
+                    <div class="module-text">
+                        Menjawab pertanyaan customer secara otomatis.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">🛒</div>
+                    <div class="module-title">Sales Agent</div>
+                    <div class="module-text">
+                        Membantu mengubah percakapan menjadi transaksi.
+                    </div>
+                </div>
+
+                <div class="module">
+                    <div class="module-icon">📅</div>
+                    <div class="module-title">Booking Agent</div>
+                    <div class="module-text">
+                        Mengelola booking dan jadwal customer.
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
 
     </section>
 
-    <section class="panel">
 
-        <h3>Trial & License</h3>
+    <!-- WHATSAPP -->
 
-        <p>
-            Sistem trial JFS AI menggunakan model:
-        </p>
+    <section id="page-whatsapp" class="page">
 
-        <strong>
-            ONBOARDING → TRIAL 3 HARI → BAYAR → ACTIVE
-        </strong>
+        <section class="section">
 
-        <p>
-            Jika trial berakhir tanpa pembayaran:
-            <strong>EXPIRED</strong>
-        </p>
+            <h2>JFS WhatsApp</h2>
+
+            <div class="notice">
+                Tahap MVP: modul WhatsApp masih berupa simulator.
+                Integrasi WhatsApp API akan kita hubungkan pada tahap
+                backend berikutnya.
+            </div>
+
+            <div class="chat">
+
+                <div class="chat-message chat-user">
+                    Kak, bisa pickup laundry 5 kg?
+                </div>
+
+                <div class="chat-message chat-ai">
+                    Bisa Kak 😊 Untuk pickup, boleh kirim nama dan alamat
+                    pickup terlebih dahulu.
+                </div>
+
+                <div class="chat-message chat-user">
+                    Berapa harga laundry 5 kg?
+                </div>
+
+                <div class="chat-message chat-ai">
+                    Saya akan mengecek layanan dan harga berdasarkan
+                    Knowledge Base bisnis.
+                </div>
+
+            </div>
+
+        </section>
 
     </section>
+
+
+    <!-- KNOWLEDGE -->
+
+    <section id="page-knowledge" class="page">
+
+        <section class="section">
+
+            <h2>JFS Knowledge Base</h2>
+
+            <div class="notice">
+                Knowledge Base adalah sumber informasi yang digunakan
+                AI Agent untuk menjawab customer dengan informasi bisnis
+                yang sesuai.
+            </div>
+
+            <table class="table">
+
+                <tr>
+                    <th>Knowledge</th>
+                    <th>Status</th>
+                </tr>
+
+                <tr>
+                    <td>Harga layanan</td>
+                    <td>Ready</td>
+                </tr>
+
+                <tr>
+                    <td>Jam operasional</td>
+                    <td>Ready</td>
+                </tr>
+
+                <tr>
+                    <td>Area pickup</td>
+                    <td>Ready</td>
+                </tr>
+
+                <tr>
+                    <td>FAQ</td>
+                    <td>Ready</td>
+                </tr>
+
+            </table>
+
+        </section>
+
+    </section>
+
+
+    <!-- BOOKING -->
+
+    <section id="page-booking" class="page">
+
+        <section class="section">
+
+            <h2>JFS Booking</h2>
+
+            <div class="notice">
+                Booking automation akan memungkinkan AI membantu customer
+                memilih jadwal, membuat booking, dan memberikan konfirmasi.
+            </div>
+
+            <div class="empty">
+                Belum ada booking aktif.
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- SALES -->
+
+    <section id="page-sales" class="page">
+
+        <section class="section">
+
+            <h2>JFS Sales</h2>
+
+            <div class="notice">
+                Modul Sales akan digunakan untuk follow-up customer,
+                rekomendasi layanan, dan meningkatkan conversion.
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-label">Leads</div>
+                    <div class="card-number">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">Follow-up</div>
+                    <div class="card-number">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">Conversion</div>
+                    <div class="card-number">0%</div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- ANALYTICS -->
+
+    <section id="page-analytics" class="page">
+
+        <section class="section">
+
+            <h2>JFS Analytics</h2>
+
+            <div class="notice">
+                Analytics akan menampilkan performa AI Agent, customer,
+                sales, booking, dan aktivitas tenant.
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-label">AI Conversations</div>
+                    <div class="card-number">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">Orders</div>
+                    <div class="card-number">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">Bookings</div>
+                    <div class="card-number">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">Revenue</div>
+                    <div class="card-number">Rp0</div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- LICENSE -->
+
+    <section id="page-license" class="page">
+
+        <section class="section">
+
+            <h2>License Management</h2>
+
+            <div class="notice">
+                Setiap tenant baru mendapatkan trial selama 3 hari.
+                Setelah trial selesai, tenant dapat diaktifkan dengan
+                license berbayar.
+            </div>
+
+            <table class="table">
+
+                <tr>
+                    <th>Plan</th>
+                    <th>Durasi</th>
+                    <th>Status</th>
+                </tr>
+
+                <tr>
+                    <td>TRIAL</td>
+                    <td>3 Hari</td>
+                    <td>Demo</td>
+                </tr>
+
+                <tr>
+                    <td>BUSINESS</td>
+                    <td>Bulanan</td>
+                    <td>Coming Soon</td>
+                </tr>
+
+                <tr>
+                    <td>PRO</td>
+                    <td>Bulanan</td>
+                    <td>Coming Soon</td>
+                </tr>
+
+            </table>
+
+        </section>
+
+    </section>
+
+
+    <div class="footer-note">
+        JFS AI Technology • JFS AI Platform MVP • Prototype
+    </div>
 
 </main>
+
+
+<!-- ADD TENANT MODAL -->
+
+<div class="modal" id="tenantModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Add New Tenant</h2>
+
+            <button class="close" onclick="closeModal()">×</button>
+
+        </div>
+
+        <form id="tenantForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Nama Bisnis *</label>
+
+                    <input
+                        id="businessName"
+                        required
+                        placeholder="Contoh: Fibo Laundry"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Kategori *</label>
+
+                    <select id="category" required>
+
+                        <option value="">Pilih kategori</option>
+                        <option>Laundry</option>
+                        <option>Barbershop</option>
+                        <option>Salon</option>
+                        <option>Bengkel</option>
+                        <option>Restaurant</option>
+                        <option>Coffee Shop</option>
+                        <option>Retail</option>
+                        <option>Lainnya</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>WhatsApp</label>
+
+                    <input
+                        id="whatsapp"
+                        placeholder="08xxxxxxxxxx"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Nama Pemilik</label>
+
+                    <input
+                        id="ownerName"
+                        placeholder="Nama pemilik"
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>Catatan Bisnis</label>
+
+                    <textarea
+                        id="notes"
+                        rows="3"
+                        placeholder="Informasi singkat bisnis..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+            <br>
+
+            <button
+                type="submit"
+                class="primary"
+            >
+                🚀 Create Tenant + Start 3 Day Trial
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const STORAGE_KEY = "jfs_ai_tenants_v2";
+
+let tenants = [];
+
+
+/* LOAD DATA */
+
+function loadTenants(){
+
+    try{
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if(saved){
+
+            tenants = JSON.parse(saved);
+
+        }else{
+
+            tenants = [
+
+                {
+                    id:"FIBO001",
+                    business:"Fibo Laundry",
+                    category:"Laundry",
+                    whatsapp:"08132217400",
+                    owner:"",
+                    notes:"Pilot Tenant JFS AI",
+                    status:"trial",
+                    createdAt:Date.now(),
+                    trialEndsAt:Date.now() + (3 * 24 * 60 * 60 * 1000)
+                }
+
+            ];
+
+            saveTenants();
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        tenants = [];
+
+    }
+
+}
+
+
+/* SAVE */
+
+function saveTenants(){
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(tenants)
+    );
+
+}
+
+
+/* ID GENERATOR */
+
+function generateTenantId(category){
+
+    const prefix = category
+        .toUpperCase()
+        .replace(/[^A-Z]/g,"")
+        .substring(0,4)
+        .padEnd(4,"X");
+
+    const sameCategory = tenants.filter(
+        t => t.id.startsWith(prefix)
+    ).length + 1;
+
+    return prefix + String(sameCategory).padStart(3,"0");
+
+}
+
+
+/* STATUS */
+
+function updateTenantStatus(tenant){
+
+    if(tenant.status === "active"){
+
+        return "active";
+
+    }
+
+    if(
+        tenant.status === "trial" &&
+        Date.now() >= tenant.trialEndsAt
+    ){
+
+        tenant.status = "expired";
+
+        saveTenants();
+
+    }
+
+    return tenant.status;
+
+}
+
+
+/* COUNTDOWN */
+
+function getCountdown(tenant){
+
+    updateTenantStatus(tenant);
+
+    if(tenant.status === "active"){
+
+        return "License ACTIVE";
+
+    }
+
+    if(tenant.status === "expired"){
+
+        return "Trial telah berakhir";
+
+    }
+
+    const diff = tenant.trialEndsAt - Date.now();
+
+    if(diff <= 0){
+
+        tenant.status = "expired";
+
+        saveTenants();
+
+        return "Trial telah berakhir";
+
+    }
+
+    const days = Math.floor(
+        diff / (1000 * 60 * 60 * 24)
+    );
+
+    const hours = Math.floor(
+        (diff / (1000 * 60 * 60)) % 24
+    );
+
+    const minutes = Math.floor(
+        (diff / (1000 * 60)) % 60
+    );
+
+    const seconds = Math.floor(
+        (diff / 1000) % 60
+    );
+
+    return `${days} hari ${hours} jam ${minutes} menit ${seconds} detik tersisa`;
+
+}
+
+
+/* STATUS HTML */
+
+function statusHTML(status){
+
+    if(status === "active"){
+
+        return `<span class="status active">● ACTIVE</span>`;
+
+    }
+
+    if(status === "expired"){
+
+        return `<span class="status expired">● EXPIRED</span>`;
+
+    }
+
+    return `<span class="status trial">● TRIAL • 3 HARI</span>`;
+
+}
+
+
+/* TENANT HTML */
+
+function tenantHTML(tenant){
+
+    updateTenantStatus(tenant);
+
+    return `
+
+        <div class="tenant">
+
+            <div class="tenant-top">
+
+                <div>
+
+                    <div class="tenant-name">
+                        ${escapeHTML(tenant.business)}
+                    </div>
+
+                    <div class="tenant-id">
+                        Tenant ID: ${tenant.id}
+                    </div>
+
+                </div>
+
+                ${statusHTML(tenant.status)}
+
+            </div>
+
+
+            <div class="tenant-info">
+
+                <span class="info-chip">
+                    🏢 ${escapeHTML(tenant.category)}
+                </span>
+
+                ${
+                    tenant.whatsapp
+                    ?
+                    `<span class="info-chip">
+                        💬 ${escapeHTML(tenant.whatsapp)}
+                    </span>`
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            <div class="countdown">
+
+                ⏱️
+                ${
+                    tenant.status === "trial"
+                    ?
+                    getCountdown(tenant)
+                    :
+                    tenant.status === "active"
+                    ?
+                    "License aktif"
+                    :
+                    "Trial expired — silakan upgrade"
+                }
+
+            </div>
+
+
+            <div class="tenant-actions">
+
+                ${
+                    tenant.status !== "active"
+                    ?
+                    `<button
+                        class="btn btn-green"
+                        onclick="activateTenant('${tenant.id}')"
+                    >
+                        ✓ Activate License
+                    </button>`
+                    :
+                    ""
+                }
+
+                ${
+                    tenant.whatsapp
+                    ?
+                    `<button
+                        class="btn btn-blue"
+                        onclick="openWhatsApp('${tenant.whatsapp}')"
+                    >
+                        💬 WhatsApp
+                    </button>`
+                    :
+                    ""
+                }
+
+                <button
+                    class="btn btn-red"
+                    onclick="deleteTenant('${tenant.id}')"
+                >
+                    Hapus
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* RENDER */
+
+function render(){
+
+    tenants.forEach(updateTenantStatus);
+
+    saveTenants();
+
+    document.getElementById("totalTenant").textContent =
+        tenants.length;
+
+    document.getElementById("activeTenant").textContent =
+        tenants.filter(t => t.status === "active").length;
+
+    document.getElementById("trialTenant").textContent =
+        tenants.filter(t => t.status === "trial").length;
+
+    document.getElementById("expiredTenant").textContent =
+        tenants.filter(t => t.status === "expired").length;
+
+
+    const html = tenants.length
+        ?
+        tenants.map(tenantHTML).join("")
+        :
+        `<div class="empty">
+            Belum ada tenant.
+        </div>`;
+
+
+    document.getElementById("dashboardTenants").innerHTML = html;
+
+    document.getElementById("tenantPageList").innerHTML = html;
+
+}
+
+
+/* ADD TENANT */
+
+document
+    .getElementById("tenantForm")
+    .addEventListener("submit", function(event){
+
+        event.preventDefault();
+
+
+        const business =
+            document.getElementById("businessName")
+            .value
+            .trim();
+
+        const category =
+            document.getElementById("category")
+            .value;
+
+        const whatsapp =
+            document.getElementById("whatsapp")
+            .value
+            .trim();
+
+        const owner =
+            document.getElementById("ownerName")
+            .value
+            .trim();
+
+        const notes =
+            document.getElementById("notes")
+            .value
+            .trim();
+
+
+        if(!business || !category){
+
+            alert("Nama bisnis dan kategori wajib diisi.");
+
+            return;
+
+        }
+
+
+        const tenant = {
+
+            id:generateTenantId(category),
+
+            business,
+
+            category,
+
+            whatsapp,
+
+            owner,
+
+            notes,
+
+            status:"trial",
+
+            createdAt:Date.now(),
+
+            trialEndsAt:
+                Date.now() +
+                (3 * 24 * 60 * 60 * 1000)
+
+        };
+
+
+        tenants.push(tenant);
+
+        saveTenants();
+
+        this.reset();
+
+        closeModal();
+
+        render();
+
+        alert(
+            `Tenant ${business} berhasil dibuat.\n\n` +
+            `Tenant ID: ${tenant.id}\n` +
+            `Trial: 3 hari`
+        );
+
+    });
+
+
+/* ACTIVATE */
+
+function activateTenant(id){
+
+    const tenant =
+        tenants.find(t => t.id === id);
+
+    if(!tenant){
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Aktifkan license untuk ${tenant.business}?`
+        );
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    tenant.status = "active";
+
+    tenant.activatedAt = Date.now();
+
+    saveTenants();
+
+    render();
+
+    alert(
+        `${tenant.business} sekarang ACTIVE.`
+    );
+
+}
+
+
+/* DELETE */
+
+function deleteTenant(id){
+
+    const tenant =
+        tenants.find(t => t.id === id);
+
+    if(!tenant){
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Hapus tenant ${tenant.business}?`
+        );
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    tenants =
+        tenants.filter(
+            t => t.id !== id
+        );
+
+    saveTenants();
+
+    render();
+
+}
+
+
+/* WHATSAPP */
+
+function openWhatsApp(number){
+
+    let phone =
+        number.replace(/\D/g,"");
+
+    if(phone.startsWith("0")){
+
+        phone =
+            "62" + phone.substring(1);
+
+    }
+
+    window.open(
+        "https://wa.me/" + phone,
+        "_blank"
+    );
+
+}
+
+
+/* NAVIGATION */
+
+function showPage(page,button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(p => p.classList.remove("active"));
+
+    document
+        .getElementById("page-" + page)
+        .classList.add("active");
+
+
+    document
+        .querySelectorAll(".menu button")
+        .forEach(b => b.classList.remove("active"));
+
+    button.classList.add("active");
+
+}
+
+
+/* MODAL */
+
+function openModal(){
+
+    document
+        .getElementById("tenantModal")
+        .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+    document
+        .getElementById("tenantModal")
+        .classList.remove("show");
+
+}
+
+
+/* ESCAPE HTML */
+
+function escapeHTML(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* INITIALIZE */
+
+loadTenants();
+
+render();
+
+
+/* UPDATE COUNTDOWN */
+
+setInterval(
+    render,
+    1000
+);
+
+</script>
 
 </body>
 </html>
