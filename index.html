@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JFS AI Platform</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 240px;
+    background: #111827;
+    color: white;
+    padding: 24px 16px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 35px;
+}
+
+.logo span {
+    display: block;
+    font-size: 12px;
+    opacity: .6;
+    margin-top: 5px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu a {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 8px;
+}
+
+.menu a:hover,
+.menu a.active {
+    background: #2563eb;
+    color: white;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 3px 15px rgba(0,0,0,.06);
+}
+
+.card small {
+    color: #64748b;
+}
+
+.card h2 {
+    margin: 10px 0 0;
+}
+
+.panel {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 15px rgba(0,0,0,.06);
+}
+
+.panel h3 {
+    margin-top: 0;
+}
+
+.tenant {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding: 16px 0;
+}
+
+.tenant:first-of-type {
+    border-top: none;
+}
+
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.trial {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+@media(max-width: 900px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 600px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        JFS AI
+        <span>Technology Platform</span>
+    </div>
+
+    <nav class="menu">
+        <a href="#" class="active">📊 Dashboard</a>
+        <a href="#">🏢 Tenants</a>
+        <a href="#">🤖 AI Agents</a>
+        <a href="#">💬 WhatsApp</a>
+        <a href="#">📚 Knowledge</a>
+        <a href="#">📅 Booking</a>
+        <a href="#">💰 Sales</a>
+        <a href="#">📈 Analytics</a>
+        <a href="#">🔐 License</a>
+    </nav>
+
+</aside>
+
+<main class="main">
+
+    <div class="header">
+        <div>
+            <h1>JFS AI Dashboard</h1>
+            <p>AI Automation Platform untuk UMKM</p>
+        </div>
+
+        <div class="badge">
+            ● Platform Online
+        </div>
+    </div>
+
+    <section class="cards">
+
+        <div class="card">
+            <small>Total Tenant</small>
+            <h2>1</h2>
+        </div>
+
+        <div class="card">
+            <small>Active</small>
+            <h2>0</h2>
+        </div>
+
+        <div class="card">
+            <small>Trial</small>
+            <h2>1</h2>
+        </div>
+
+        <div class="card">
+            <small>Expired</small>
+            <h2>0</h2>
+        </div>
+
+    </section>
+
+    <section class="panel">
+
+        <h3>Tenant Management</h3>
+
+        <div class="tenant">
+
+            <div>
+                <strong>Fibo Laundry</strong>
+                <br>
+                <small>Tenant ID: FIBO001</small>
+            </div>
+
+            <div class="status trial">
+                TRIAL • 3 HARI
+            </div>
+
+        </div>
+
+        <div class="tenant">
+
+            <div>
+                <strong>Demo Tenant</strong>
+                <br>
+                <small>Tenant ID: DEMO001</small>
+            </div>
+
+            <div class="status active">
+                ACTIVE
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+
+        <h3>JFS AI Modules</h3>
+
+        <p>🤖 AI Admin — Customer Service Automation</p>
+        <p>💬 JFS WhatsApp — WhatsApp AI Integration</p>
+        <p>📚 JFS Knowledge — Knowledge Base</p>
+        <p>📅 JFS Booking — Booking Automation</p>
+        <p>💰 JFS Sales — Sales Automation</p>
+        <p>📈 JFS Analytics — Business Analytics</p>
+
+    </section>
+
+    <section class="panel">
+
+        <h3>Trial & License</h3>
+
+        <p>
+            Sistem trial JFS AI menggunakan model:
+        </p>
+
+        <strong>
+            ONBOARDING → TRIAL 3 HARI → BAYAR → ACTIVE
+        </strong>
+
+        <p>
+            Jika trial berakhir tanpa pembayaran:
+            <strong>EXPIRED</strong>
+        </p>
+
+    </section>
+
+</main>
+
+</body>
+</html>
