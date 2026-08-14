@@ -1,9 +1,6 @@
-/* JFS AI — Shared Tenant Data + Admin Gate
-   Dashboard utama = portal ADMIN JFS AI.
-   Source of truth subscription = Supabase.
-*/
+/* JFS AI — Shared Tenant Data + Admin Gate */
 (function(){
-  const KEY='jfs_ai_tenants_v2';
+  const KEY='jfs_ai_tenants_v3';
   const SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co';
   const SUPABASE_KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD';
   const seed=[
@@ -15,7 +12,6 @@
   function syncStatus(t){if((t.status==='ACTIVE'||t.status==='TRIAL')&&t.expiresAt){const d=new Date(t.expiresAt+'').getTime();if(!isNaN(d)&&Date.now()>=d)t.status='EXPIRED'}return t}
   window.JFSTenantStore={key:KEY,all:function(){const d=load().map(syncStatus);save(d);return d},get:function(id){return this.all().find(t=>t.id===id)},save:function(t){const d=this.all();const i=d.findIndex(x=>x.id===t.id);if(i>=0)d[i]=t;else d.push(t);save(d);return t},seed:function(){save(seed);return seed}};
 
-  /* ================= ADMIN LOGIN GATE ================= */
   const gate=document.createElement('div');gate.id='jfs-admin-gate';gate.style.cssText='position:fixed;inset:0;z-index:2147483647;background:radial-gradient(circle at 80% 10%,#1687ff25,transparent 35%),#060b18;color:#fff;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,Helvetica,sans-serif';
   gate.innerHTML='<div style="width:min(430px,100%);background:#0d1630;border:1px solid #ffffff18;border-radius:18px;padding:30px;box-shadow:0 25px 80px #0008"><div style="text-align:center;margin-bottom:22px"><div style="font-size:28px;font-weight:800">JFS <span style="color:#12d7ff">AI</span></div><div style="font-size:10px;color:#91a0bd;letter-spacing:1.5px;margin-top:5px">TECHNOLOGY ADMIN PLATFORM</div></div><h2 style="font-size:20px;margin-bottom:7px">🔐 Admin Login</h2><p style="font-size:12px;color:#91a0bd;line-height:1.5;margin-bottom:18px">Login diperlukan untuk mengakses dashboard dan Tenant Management.</p><form id="jfsAdminForm"><input id="jfsAdminEmail" type="email" autocomplete="username" placeholder="Email admin" required style="width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ffffff18;background:#07101f;color:#fff"><input id="jfsAdminPassword" type="password" autocomplete="current-password" placeholder="Password" required style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid #ffffff18;background:#07101f;color:#fff"><button id="jfsAdminBtn" type="submit" style="width:100%;padding:12px;border:0;border-radius:8px;background:linear-gradient(135deg,#0879ff,#11a7ff);color:#fff;font-weight:700;cursor:pointer">Sign In</button><div id="jfsAdminMsg" style="font-size:11px;color:#ff8290;margin-top:12px;line-height:1.5"></div></form></div>';
   document.documentElement.style.overflow='hidden';document.body.appendChild(gate);
@@ -26,7 +22,6 @@
   function unlock(){document.documentElement.style.overflow='';gate.remove();window.JFS_ADMIN_READY=true;if(typeof window.renderTenants==='function'){window.renderTenants();window.renderTenants('tenantPageList')}}
   requireAdmin();
 
-  /* ================= REAL SUPABASE ACTIVATION ================= */
   function installRemoteActivation(){if(typeof window.activateTenant!=='function'||window.activateTenant.__jfsRemote)return false;async function remoteActivate(id){const t=JFSTenantStore.get(id);if(!t)return;const client=window.JFS_ADMIN_SUPABASE;if(!client)return toast('Sesi admin belum siap.');const choice=prompt('Pilih masa subscription untuk '+t.name+': ketik 3, 6, atau 12 bulan','3');if(!['3','6','12'].includes(choice))return;try{const {data:tenant,error:te}=await client.from('tenants').select('id,business_name').eq('business_name',t.name).maybeSingle();if(te)throw te;if(!tenant)throw new Error('Tenant '+t.name+' belum ditemukan di Supabase.');const {data:plan,error:pe}=await client.from('subscription_plans').select('id,duration_months,price').eq('duration_months',Number(choice)).eq('is_active',true).maybeSingle();if(pe)throw pe;if(!plan)throw new Error('Paket '+choice+' bulan belum tersedia.');const now=new Date(),end=new Date(now);end.setMonth(end.getMonth()+Number(choice));const date=d=>d.toISOString().slice(0,10);const {error:ie}=await client.from('tenant_subscriptions').insert({tenant_id:tenant.id,plan_id:plan.id,start_date:date(now),end_date:date(end),status:'active',amount:plan.price||0,payment_status:'paid',auto_renew:false,notes:'Diaktifkan oleh admin JFS AI'});if(ie)throw ie;t.status='ACTIVE';t.plan=choice+' Bulan';t.startedAt=date(now);t.expiresAt=date(end);JFSTenantStore.save(t);renderTenants();renderTenants('tenantPageList');toast(t.name+' ACTIVE sampai '+dateText(end))}catch(e){console.error(e);toast('Gagal aktivasi: '+(e.message||e))}}remoteActivate.__jfsRemote=true;window.activateTenant=remoteActivate;return true}
   const timer=setInterval(()=>{if(installRemoteActivation())clearInterval(timer)},100);setTimeout(()=>clearInterval(timer),15000);
 })();
