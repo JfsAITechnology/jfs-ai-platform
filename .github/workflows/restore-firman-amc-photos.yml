@@ -19,14 +19,10 @@ jobs:
           from pathlib import Path
           p = Path('mas-firman-pratama/demo.html')
           s = p.read_text(encoding='utf-8')
-
           start = s.find('async function loadAMCClassImages(){')
-          if start < 0:
-              raise SystemExit('loadAMCClassImages not found')
+          if start < 0: raise SystemExit('loadAMCClassImages not found')
           end = s.find('async function loadClassImage(){', start)
-          if end < 0:
-              raise SystemExit('loadClassImage anchor not found')
-
+          if end < 0: raise SystemExit('loadClassImage anchor not found')
           fn = '''async function loadAMCClassImages(){
             const photos={
               regular:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=90',
@@ -34,22 +30,14 @@ jobs:
               platinum:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90'
             };
             for(const [kind,src] of Object.entries(photos)){
-              document.querySelectorAll('[data-amc-image="'+kind+'"]').forEach(n=>{
-                n.src=src;
-                n.onerror=()=>{n.style.objectFit='contain';n.src=photos.regular;};
-              });
+              document.querySelectorAll('[data-amc-image="'+kind+'"]').forEach(n=>{n.src=src;n.onerror=()=>{n.style.objectFit='contain';n.src=photos.regular;};});
             }
           }
           '''
-          s = s[:start] + fn + s[end:]
-
-          # Keep the legacy distinct-photo URLs from the earlier Mas Firman catalog
-          # available in the page as explicit data, while the current catalog remains untouched.
-          marker = '/* mas-firman-amc-photos-v2 */'
-          if marker not in s:
-              s = s.replace('</style>', marker + '</style>', 1)
-
-          p.write_text(s, encoding='utf-8')
+          s=s[:start]+fn+s[end:]
+          if '/* mas-firman-amc-photos-v2 */' not in s:
+              s=s.replace('</style>','/* mas-firman-amc-photos-v2 */</style>',1)
+          p.write_text(s,encoding='utf-8')
           PY
           git config user.name 'JFS AI Technology'
           git config user.email '316434542+JfsAITechnology@users.noreply.github.com'
