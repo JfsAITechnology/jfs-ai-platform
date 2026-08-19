@@ -55,10 +55,7 @@ async function loadAMCClassImages(){
     platinum:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90'
   };
   for(const [kind,src] of Object.entries(photos)){
-    document.querySelectorAll('[data-amc-image="'+kind+'"]').forEach(n=>{
-      n.src=src;
-      n.onerror=()=>{n.style.objectFit='contain';n.src=photos.regular;};
-    });
+    document.querySelectorAll('[data-amc-image="'+kind+'"]').forEach(n=>{n.src=src;n.onerror=()=>{n.style.objectFit='contain';n.src=photos.regular;};});
   }
 }
 async function loadClassImage(){const fallback='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600"><rect width="100%" height="100%" fill="#101f3b"/><text x="50%" y="43%" fill="#12d7ff" font-size="64" text-anchor="middle" font-family="Arial">ALPHA MIND CONTROL</text><text x="50%" y="58%" fill="white" font-size="42" text-anchor="middle" font-family="Arial">AMC REGULER</text><text x="50%" y="70%" fill="#ffd45c" font-size="36" text-anchor="middle" font-family="Arial">29 AGUSTUS 2026</text></svg>');const img=document.getElementById('classImg');img.src=fallback;try{const r=await fetch('https://masfirmanpratama.com/wp-json/wp/v2/media?search=kelas%20amc%20surabaya%20agustus&per_page=10');const j=await r.json();const hit=j.find(x=>/kelas|amc|agustus/i.test((x.alt_text||'')+' '+(x.slug||'')+' '+(x.title?.rendered||'')));if(hit?.source_url)img.src=hit.source_url}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{load();loadProducts();loadClassImage();loadAMCClassImages()});</script></body></html>
