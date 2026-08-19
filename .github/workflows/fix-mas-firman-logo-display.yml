@@ -1,0 +1,29 @@
+name: Fix Mas Firman logo display
+on:
+  push:
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.event.head_commit.message != 'Fix Mas Firman JFS AI logo display'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix logo sizing and crop
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('mas-firman-pratama/demo.html')
+          s=p.read_text(encoding='utf-8')
+          old='.logo{width:50px;height:50px;border-radius:50%;border:2px solid #12d7ff;object-fit:cover}'
+          new='.logo{width:52px;height:52px;border-radius:50%;border:0;object-fit:contain;background:transparent;display:block}'
+          if old in s:
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'JFS AI Technology'
+          git config user.email '316434542+JfsAITechnology@users.noreply.github.com'
+          git add mas-firman-pratama/demo.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Fix Mas Firman JFS AI logo display'
+          git push
