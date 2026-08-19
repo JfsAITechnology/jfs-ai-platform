@@ -1,0 +1,59 @@
+name: Restore Mas Firman AMC photos
+
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-firman-amc-photos.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch AMC photos in demo
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('mas-firman-pratama/demo.html')
+          s = p.read_text(encoding='utf-8')
+
+          start = s.find('async function loadAMCClassImages(){')
+          if start < 0:
+              raise SystemExit('loadAMCClassImages not found')
+          end = s.find('async function loadClassImage(){', start)
+          if end < 0:
+              raise SystemExit('loadClassImage anchor not found')
+
+          fn = '''async function loadAMCClassImages(){
+            const photos={
+              regular:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=90',
+              private:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=90',
+              platinum:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90'
+            };
+            for(const [kind,src] of Object.entries(photos)){
+              document.querySelectorAll('[data-amc-image="'+kind+'"]').forEach(n=>{
+                n.src=src;
+                n.onerror=()=>{n.style.objectFit='contain';n.src=photos.regular;};
+              });
+            }
+          }
+          '''
+          s = s[:start] + fn + s[end:]
+
+          # Keep the legacy distinct-photo URLs from the earlier Mas Firman catalog
+          # available in the page as explicit data, while the current catalog remains untouched.
+          marker = '/* mas-firman-amc-photos-v2 */'
+          if marker not in s:
+              s = s.replace('</style>', marker + '</style>', 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name 'JFS AI Technology'
+          git config user.email '316434542+JfsAITechnology@users.noreply.github.com'
+          git add mas-firman-pratama/demo.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Restore distinct AMC class photos in Mas Firman demo'
+          git push
