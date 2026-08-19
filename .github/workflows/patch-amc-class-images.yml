@@ -14,95 +14,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Patch demo page
-        env:
-          TARGET: mas-firman-pratama/demo.html
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('mas-firman-pratama/demo.html')
-          s = p.read_text(encoding='utf-8')
-          marker = 'amc-class-visuals-v1'
-          if marker in s:
-              print('AMC visuals already patched; nothing to do.')
-              raise SystemExit(0)
-
-          css = '''
-          /* amc-class-visuals-v1 */
-          .amcClasses{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:0 0 16px}
-          .amcClass{overflow:hidden;padding:0;background:linear-gradient(145deg,#0b1224,#070d1c);border:1px solid #ffffff14;border-radius:14px;transition:.2s}
-          .amcClass:hover{transform:translateY(-2px);border-color:#1687ff66}
-          .amcClass .amcImg{width:100%;height:170px;display:block;object-fit:cover;background:#101a32}
-          .amcClass .amcBody{padding:14px}
-          .amcClass h3{margin:0 0 5px;font-size:16px}
-          .amcClass p{margin:0 0 10px;color:#94a3bd;font-size:10px;min-height:48px}
-          .amcPrice{font-size:15px;font-weight:700;color:#32e39b}
-          .amcClass .btn{margin:8px 0 0}
-          @media(max-width:900px){.amcClasses{grid-template-columns:1fr 1fr}}
-          @media(max-width:650px){.amcClasses{grid-template-columns:1fr}.amcClass .amcImg{height:190px}}
-          '''
-          s = s.replace('</style>', css + '</style>', 1)
-
-          html = '''
-          <div class="panel" style="margin-bottom:15px">
-            <div class="row" style="justify-content:space-between;align-items:flex-end">
-              <div><span class="pill">🎓 PILIH PROGRAM AMC</span><h2 style="margin:7px 0 3px">3 Pilihan Kelas Alpha Mind Control</h2><p class="sub">Visual kelas diambil dari materi/gambar publik Mas Firman Pratama dan disesuaikan dengan tiga format program AMC.</p></div>
-            </div>
-            <div class="amcClasses">
-              <article class="amcClass">
-                <img class="amcImg" data-amc-image="regular" alt="Kelas AMC Reguler">
-                <div class="amcBody"><h3>AMC Reguler</h3><p>Kelas bersama dengan 20 materi AMC, modul, buku Alpha Telepati dan pendampingan alumni.</p><div class="amcPrice">Rp4.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Reguler')">Pilih Reguler</button></div>
-              </article>
-              <article class="amcClass">
-                <img class="amcImg" data-amc-image="private" alt="Kelas AMC Privat">
-                <div class="amcBody"><h3>AMC Privat</h3><p>Kelas satu per satu dengan materi AMC yang sama, sehingga pembahasan bisa lebih fokus pada kebutuhan peserta.</p><div class="amcPrice">Rp7.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Privat')">Pilih Privat</button></div>
-              </article>
-              <article class="amcClass">
-                <img class="amcImg" data-amc-image="platinum" alt="Kelas AMC Platinum">
-                <div class="amcBody"><h3>AMC Platinum</h3><p>Program intensif 3 hari dengan materi advanced, hotel, makan dan waktu pendampingan yang lebih mendalam.</p><div class="amcPrice">Rp22.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Platinum')">Pilih Platinum</button></div>
-              </article>
-            </div>
-          </div>
-          '''
-          needle = '<section id="registration" class="page"><div class="panel"><h2>📅 AI Booking & Pendaftaran Kelas</h2><p class="sub">Form → CRM → booking database → admin follow-up.</p>'
-          replacement = needle + html
-          if needle not in s:
-              raise SystemExit('Registration section anchor not found')
-          s = s.replace(needle, replacement, 1)
-
-          js = '''
-          function selectAMC(program){
-            const el=document.getElementById('rProgram');
-            if(el){el.value=program;el.scrollIntoView({behavior:'smooth',block:'center'});}
-          }
-          async function loadAMCClassImages(){
-            const fallback={
-              regular:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-jakarta-juli-2026.jpg',
-              private:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-surabaya-agustus.jpg',
-              platinum:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-surabaya-agustus.jpg'
-            };
-            const queries={regular:'kelas amc jakarta juli 2026',private:'kelas amc privat',platinum:'kelas amc platinum'};
-            for(const [kind,q] of Object.entries(queries)){
-              const nodes=document.querySelectorAll('[data-amc-image="'+kind+'"]');
-              try{
-                const r=await fetch('https://masfirmanpratama.com/wp-json/wp/v2/media?search='+encodeURIComponent(q)+'&per_page=20');
-                const items=await r.json();
-                const hit=items.find(x=>/kelas|amc|platinum|privat/i.test((x.alt_text||'')+' '+(x.slug||'')+' '+(x.title?.rendered||'')) && x.source_url);
-                const src=hit?.source_url||fallback[kind];
-                nodes.forEach(n=>{n.src=src;n.onerror=()=>{n.style.objectFit='contain';n.src=fallback.regular;};});
-              }catch(e){nodes.forEach(n=>{n.src=fallback[kind]||fallback.regular;});}
-            }
-          }
-          '''
-          anchor = 'async function loadClassImage(){'
-          if anchor not in s:
-              raise SystemExit('loadClassImage anchor not found')
-          s = s.replace(anchor, js + anchor, 1)
-          s = s.replace('document.addEventListener(\'DOMContentLoaded\',()=>{load();loadProducts();loadClassImage()});', 'document.addEventListener(\'DOMContentLoaded\',()=>{load();loadProducts();loadClassImage();loadAMCClassImages()});', 1)
-          p.write_text(s, encoding='utf-8')
-          print('Patched', p)
+          p=Path('mas-firman-pratama/demo.html'); s=p.read_text(encoding='utf-8')
+          if 'amc-class-visuals-v1' in s: raise SystemExit(0)
+          css='''\n          /* amc-class-visuals-v1 */\n          .amcClasses{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:0 0 16px}.amcClass{overflow:hidden;padding:0;background:linear-gradient(145deg,#0b1224,#070d1c);border:1px solid #ffffff14;border-radius:14px;transition:.2s}.amcClass:hover{transform:translateY(-2px);border-color:#1687ff66}.amcClass .amcImg{width:100%;height:170px;display:block;object-fit:cover;background:#101a32}.amcClass .amcBody{padding:14px}.amcClass h3{margin:0 0 5px;font-size:16px}.amcClass p{margin:0 0 10px;color:#94a3bd;font-size:10px;min-height:48px}.amcPrice{font-size:15px;font-weight:700;color:#32e39b}.amcClass .btn{margin:8px 0 0}@media(max-width:900px){.amcClasses{grid-template-columns:1fr 1fr}}@media(max-width:650px){.amcClasses{grid-template-columns:1fr}.amcClass .amcImg{height:190px}}\n          '''
+          s=s.replace('</style>',css+'</style>',1)
+          html='''\n          <div class="panel" style="margin-bottom:15px"><div><span class="pill">🎓 PILIH PROGRAM AMC</span><h2 style="margin:7px 0 3px">3 Pilihan Kelas Alpha Mind Control</h2><p class="sub">Visual kelas menggunakan gambar publik dari website Mas Firman Pratama dan disesuaikan dengan tiga format program AMC.</p></div><div class="amcClasses"><article class="amcClass"><img class="amcImg" data-amc-image="regular" alt="Kelas AMC Reguler"><div class="amcBody"><h3>AMC Reguler</h3><p>Kelas bersama dengan 20 materi AMC, modul, buku Alpha Telepati dan pendampingan alumni.</p><div class="amcPrice">Rp4.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Reguler')">Pilih Reguler</button></div></article><article class="amcClass"><img class="amcImg" data-amc-image="private" alt="Kelas AMC Privat"><div class="amcBody"><h3>AMC Privat</h3><p>Kelas satu per satu dengan materi AMC yang sama, sehingga pembahasan lebih fokus pada kebutuhan peserta.</p><div class="amcPrice">Rp7.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Privat')">Pilih Privat</button></div></article><article class="amcClass"><img class="amcImg" data-amc-image="platinum" alt="Kelas AMC Platinum"><div class="amcBody"><h3>AMC Platinum</h3><p>Program intensif 3 hari dengan materi advanced, hotel, makan dan pendampingan yang lebih mendalam.</p><div class="amcPrice">Rp22.500.000</div><button class="btn primary" type="button" onclick="selectAMC('AMC Platinum')">Pilih Platinum</button></div></article></div></div>\n          '''
+          needle='<section id="registration" class="page"><div class="panel"><h2>📅 AI Booking & Pendaftaran Kelas</h2><p class="sub">Form → CRM → booking database → admin follow-up.</p>'
+          if needle not in s: raise SystemExit('anchor missing')
+          s=s.replace(needle,needle+html,1)
+          js='''\n          function selectAMC(program){const el=document.getElementById('rProgram');if(el){el.value=program;el.scrollIntoView({behavior:'smooth',block:'center'});}}\n          async function loadAMCClassImages(){const fallback={regular:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-jakarta-juli-2026.jpg',private:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-surabaya-agustus.jpg',platinum:'https://masfirmanpratama.com/wp-content/uploads/2026/08/kelas-amc-surabaya-agustus.jpg'};const queries={regular:'kelas amc jakarta juli 2026',private:'kelas amc privat',platinum:'kelas amc platinum'};for(const [kind,q] of Object.entries(queries)){const nodes=document.querySelectorAll('[data-amc-image="'+kind+'"]');try{const r=await fetch('https://masfirmanpratama.com/wp-json/wp/v2/media?search='+encodeURIComponent(q)+'&per_page=20');const items=await r.json();const hit=items.find(x=>/kelas|amc|platinum|privat/i.test((x.alt_text||'')+' '+(x.slug||'')+' '+(x.title?.rendered||''))&&x.source_url);const src=hit?.source_url||fallback[kind];nodes.forEach(n=>{n.src=src;n.onerror=()=>{n.style.objectFit='contain';n.src=fallback.regular;};});}catch(e){nodes.forEach(n=>n.src=fallback[kind]||fallback.regular);}}}\n          '''
+          s=s.replace('async function loadClassImage(){',js+'async function loadClassImage(){',1)
+          s=s.replace("document.addEventListener('DOMContentLoaded',()=>{load();loadProducts();loadClassImage()});","document.addEventListener('DOMContentLoaded',()=>{load();loadProducts();loadClassImage();loadAMCClassImages()});",1)
+          p.write_text(s,encoding='utf-8')
           PY
-      - name: Commit and push
-        run: |
           git config user.name 'JFS AI Technology'
           git config user.email '316434542+JfsAITechnology@users.noreply.github.com'
           git add mas-firman-pratama/demo.html
