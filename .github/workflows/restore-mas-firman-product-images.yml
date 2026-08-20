@@ -1,0 +1,81 @@
+name: Restore Mas Firman Product Images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Restore catalog and AMC images
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('mas-firman-pratama/demo.html')
+          s = path.read_text(encoding='utf-8')
+
+          start = s.find('async function loadProducts(){')
+          end = s.find('function loadAMCClassImages(){', start)
+          if start < 0 or end < 0:
+              raise SystemExit('Target functions not found')
+
+          replacement = r'''async function loadProducts(){
+            const g=document.getElementById('productsGrid');
+            if(!g)return;
+            const books=[
+              ['Buku 10 Keajaiban Pikiran','https://masfirmanpratama.com/wp-content/uploads/2024/11/10kc.jpg','Langkah awal mengenali keajaiban pikiran.'],
+              ['Kitab 101 Kalimat Sugesti Ajaib','https://masfirmanpratama.com/wp-content/uploads/2024/11/101-tanpa-web-2.jpg','Panduan 101 kalimat sugesti dan materi pendukung.'],
+              ['Buku Alpha Telepati','https://masfirmanpratama.com/wp-content/uploads/2024/11/ATc.jpg','Buku pendamping Alpha Telepati dan komunikasi pikiran.'],
+              ['Buku Instan Hipnosis','https://masfirmanpratama.com/wp-content/uploads/2024/11/H5.jpg','Modul Hipnosis Modern untuk belajar dan praktik.'],
+              ['Kitab Kunci Penarik Rezeki','https://masfirmanpratama.com/wp-content/uploads/2024/11/kpr2-tnpa-web.jpg','Kitab panduan Kunci Penarik Rezeki.']
+            ];
+            const fallback='https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=90';
+            g.innerHTML=books.map((p,i)=>'<div class="card product"><img src="'+p[1]+'" onerror="this.src=\''+fallback+'\'"><h3>'+p[0]+'</h3><div class="muted">'+p[2]+'</div><button class="btn primary" onclick="toast(\'Membuka detail '+p[0]+'\')">Detail Produk</button></div>').join('')+
+              '<div class="card product"><img data-amc-catalog-image="regular"><h3>AMC Reguler</h3><div class="muted">Program kelas AMC Reguler</div><div class="amcPrice">Rp4.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>'+
+              '<div class="card product"><img data-amc-catalog-image="private"><h3>AMC Privat</h3><div class="muted">Program kelas AMC Privat</div><div class="amcPrice">Rp7.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>'+
+              '<div class="card product"><img data-amc-catalog-image="platinum"><h3>AMC Platinum</h3><div class="muted">Program intensif AMC Platinum</div><div class="amcPrice">Rp22.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>';
+            loadAMCClassImages();
+          }
+
+          function loadAMCClassImages(){
+            const fallback={
+              regular:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=90',
+              private:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=90',
+              platinum:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90'
+            };
+            for(const [kind,src] of Object.entries(fallback)){
+              document.querySelectorAll('[data-amc-image="'+kind+'"],[data-amc-catalog-image="'+kind+'"]').forEach(n=>{n.src=src;n.onerror=()=>{n.src=fallback.regular;}});
+            }
+            fetch('https://masfirmanpratama.com/wp-json/wp/v2/media?search=kelas%20amc&per_page=30')
+              .then(r=>r.ok?r.json():[]).then(items=>{
+                const imgs=(items||[]).filter(x=>x&&x.source_url).map(x=>x.source_url).filter((v,i,a)=>a.indexOf(v)===i);
+                if(!imgs.length)return;
+                const selected=[imgs[0],imgs[1]||imgs[0],imgs[2]||imgs[1]||imgs[0]];
+                ['regular','private','platinum'].forEach((kind,i)=>{
+                  document.querySelectorAll('[data-amc-image="'+kind+'"],[data-amc-catalog-image="'+kind+'"]').forEach(n=>{n.src=selected[i];});
+                });
+              }).catch(()=>{});
+          }
+
+          '''
+          s = s[:start] + replacement + s[end:]
+          path.write_text(s, encoding='utf-8')
+
+      - name: Commit patched demo
+        run: |
+          git config user.name "JFS AI Technology"
+          git config user.email "jfs-ai-technology@users.noreply.github.com"
+          git add mas-firman-pratama/demo.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Restore Mas Firman catalog book and AMC class images"
+          git push
