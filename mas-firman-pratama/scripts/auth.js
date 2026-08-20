@@ -10,11 +10,7 @@ async function getSupabase() {
   if (_client) return _client;
   const mod = await import('https://esm.sh/@supabase/supabase-js@2');
   _client = mod.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
   return _client;
 }
@@ -34,13 +30,13 @@ async function getTenantAccess() {
     .eq('is_active', true)
     .maybeSingle();
 
-  return {
-    authenticated: true,
-    authorized: !membershipError && !!membership,
-    user: userData.user,
-    membership: membership || null,
-    error: membershipError || null
-  };
+  return { authenticated: true, authorized: !membershipError && !!membership, user: userData.user, membership: membership || null, error: membershipError || null };
+}
+
+async function signOutTenant() {
+  const supabase = await getSupabase();
+  await supabase.auth.signOut({ scope: 'local' });
+  window.location.replace('../pages/login.html');
 }
 
 async function requireTenantAccess() {
@@ -62,12 +58,14 @@ async function requireTenantAccess() {
       </main>`;
     return null;
   }
+
+  // Small tenant-session badge and sign-out action. Authorization remains enforced by RLS.
+  const badge = document.createElement('div');
+  badge.style.cssText='position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:8px;background:#101b2f;border:1px solid #29415f;color:#dce8f8;padding:8px 10px;border-radius:12px;font:12px Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  badge.innerHTML='<span>● Tenant Secure</span><button id="jfsTenantLogout" style="border:0;border-radius:8px;padding:6px 9px;cursor:pointer">Keluar</button>';
+  document.body.appendChild(badge);
+  document.getElementById('jfsTenantLogout').addEventListener('click', signOutTenant);
   return access;
 }
 
-window.JFSTenantAuth = {
-  getSupabase,
-  getTenantAccess,
-  requireTenantAccess,
-  tenantId: TENANT_ID
-};
+window.JFSTenantAuth = { getSupabase, getTenantAccess, requireTenantAccess, signOutTenant, tenantId: TENANT_ID };
