@@ -1,4 +1,7 @@
-(() => {
+(async () => {
+  const access = await window.JFSTenantAuth?.requireTenantAccess();
+  if (!access) return;
+
   const fallback = window.JFS_CATALOG;
   const KEY='jfs-firman-ui';
   let state=JSON.parse(localStorage.getItem(KEY)||'{}');
@@ -51,12 +54,12 @@
     $('scheduleCards').innerHTML=catalog.programs.map(p=>`<div class="card"><b>${p.name}</b><p class="muted">${state.schedule[p.type]||'Jadwal belum tersedia'}</p></div>`).join('');
   }
   function renderLeads(){
-    const html=state.leads.length?state.leads.map(x=>`<div class="item"><b>${x.name}</b> · ${x.program} · Score ${x.score}</div>`).join(''):'<p class="muted">Belum ada lead di sesi browser ini. Modul CRM akan dipindahkan ke Supabase setelah autentikasi tenant.</p>';
+    const html=state.leads.length?state.leads.map(x=>`<div class="item"><b>${x.name}</b> · ${x.program} · Score ${x.score}</div>`).join(''):'<p class="muted">Belum ada lead di sesi browser ini. Modul CRM akan dipindahkan ke Supabase pada fase berikutnya.</p>';
     $('leadList').innerHTML=html;$('crmList').innerHTML=html;$('nlead').textContent=state.leads.length;$('nhot').textContent=state.leads.filter(x=>x.score>=85).length;$('nbook').textContent='—';
   }
-  window.register=()=>{const n=$('rn').value.trim();const phone=$('rp').value.trim();if(!n)return toast('Nama wajib diisi');if(!phone)return toast('WhatsApp wajib diisi');const pr=$('rprog').value;state.leads.push({name:n,phone,program:pr,score:pr.includes('Platinum')?95:pr.includes('Privat')?85:75});save();renderLeads();toast('Pendaftaran dicatat sementara. CRM Supabase menyusul setelah auth tenant.')};
+  window.register=()=>{const n=$('rn').value.trim();const phone=$('rp').value.trim();if(!n)return toast('Nama wajib diisi');if(!phone)return toast('WhatsApp wajib diisi');const pr=$('rprog').value;state.leads.push({name:n,phone,program:pr,score:pr.includes('Platinum')?95:pr.includes('Privat')?85:75});save();renderLeads();toast('Pendaftaran dicatat sementara. CRM Supabase menyusul pada fase berikutnya.')};
   window.ask=()=>{const q=$('q').value.trim();if(!q)return;$('chat').innerHTML+=`<div class="msg me"></div>`;$('chat').lastElementChild.textContent=q;const z=q.toLowerCase();let a='Saya belum menemukan informasi tersebut di Knowledge Database. Silakan hubungi Admin.';for(const p of catalog.products){if(z.includes(p.name.toLowerCase())||(z.includes('harga')&&z.includes((p.name||'').toLowerCase().split(' ')[1])))a=`${p.name}: ${p.description} Harga ${money(p.price)}.`}for(const p of catalog.programs){if(z.includes(p.type.toLowerCase())||z.includes(p.name.toLowerCase()))a=`${p.name}: ${state.schedule[p.type]||'Jadwal belum diisi admin'}.`}$('chat').innerHTML+=`<div class="msg"></div>`;$('chat').lastElementChild.textContent=a;$('q').value=''};
-  function renderKnowledge(){const k=window.JFS_KNOWLEDGE||[];$('kview').innerHTML=k.length?k.map(x=>`<div class="item"><b>${x.title}</b><p>${x.content}</p></div>`).join(''):'<div class="item">Knowledge tenant tersedia di Supabase, tetapi belum dibuka untuk akses publik. Setelah login tenant aktif, data ini akan menjadi sumber AI.</div>'}
+  function renderKnowledge(){const k=window.JFS_KNOWLEDGE||[];$('kview').innerHTML=k.length?k.map(x=>`<div class="item"><b>${x.title}</b><p>${x.content}</p></div>`).join(''):'<div class="item">Knowledge tenant belum tersedia.</div>'}
   window.toast=m=>{const t=$('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)};
   window.wa=text=>window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
   renderProducts(); renderLeads(); loadTenantData();
