@@ -24,49 +24,54 @@ jobs:
           path = Path('mas-firman-pratama/demo.html')
           s = path.read_text(encoding='utf-8')
 
-          start = s.find('async function loadProducts(){')
-          end = s.find('function loadAMCClassImages(){', start)
+          start = s.find('const products=[')
+          end = s.find('function renderProducts(){', start)
           if start < 0 or end < 0:
-              raise SystemExit('Target functions not found')
+              raise SystemExit('Products renderer target not found')
 
-          replacement = r'''async function loadProducts(){
-            const g=document.getElementById('productsGrid');
-            if(!g)return;
-            const books=[
-              ['Buku 10 Keajaiban Pikiran','https://masfirmanpratama.com/wp-content/uploads/2024/11/10kc.jpg','Langkah awal mengenali keajaiban pikiran.'],
-              ['Kitab 101 Kalimat Sugesti Ajaib','https://masfirmanpratama.com/wp-content/uploads/2024/11/101-tanpa-web-2.jpg','Panduan 101 kalimat sugesti dan materi pendukung.'],
-              ['Buku Alpha Telepati','https://masfirmanpratama.com/wp-content/uploads/2024/11/ATc.jpg','Buku pendamping Alpha Telepati dan komunikasi pikiran.'],
-              ['Buku Instan Hipnosis','https://masfirmanpratama.com/wp-content/uploads/2024/11/H5.jpg','Modul Hipnosis Modern untuk belajar dan praktik.'],
-              ['Kitab Kunci Penarik Rezeki','https://masfirmanpratama.com/wp-content/uploads/2024/11/kpr2-tnpa-web.jpg','Kitab panduan Kunci Penarik Rezeki.']
-            ];
+          replacement = r'''const products=[
+            {id:'book1',name:'Buku 10 Keajaiban Pikiran',price:'Rp250.000',desc:'Langkah awal mengenali keajaiban pikiran.',img:'https://masfirmanpratama.com/wp-content/uploads/2024/11/10kc.jpg'},
+            {id:'book2',name:'Kitab 101 Kalimat Sugesti Ajaib',price:'Rp250.000',desc:'Panduan 101 kalimat sugesti dan materi pendukung.',img:'https://masfirmanpratama.com/wp-content/uploads/2024/11/101-tanpa-web-2.jpg'},
+            {id:'book3',name:'Buku Alpha Telepati',price:'Rp250.000',desc:'Buku pendamping Alpha Telepati dan komunikasi pikiran.',img:'https://masfirmanpratama.com/wp-content/uploads/2024/11/ATc.jpg'},
+            {id:'book4',name:'Buku Instan Hipnosis',price:'Rp250.000',desc:'Modul Hipnosis Modern untuk belajar dan praktik.',img:'https://masfirmanpratama.com/wp-content/uploads/2024/11/H5.jpg'},
+            {id:'book5',name:'Kitab Kunci Penarik Rezeki',price:'Rp250.000',desc:'Kitab panduan Kunci Penarik Rezeki.',img:'https://masfirmanpratama.com/wp-content/uploads/2024/11/kpr2-tnpa-web.jpg'},
+            {id:'class1',name:'AMC Reguler',price:'Rp4.500.000',desc:'Kelas AMC Reguler.',img:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=90',amc:'regular'},
+            {id:'class2',name:'AMC Privat',price:'Rp7.500.000',desc:'Kelas AMC Privat yang lebih personal.',img:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=90',amc:'private'},
+            {id:'class3',name:'AMC Platinum',price:'Rp22.500.000',desc:'Program intensif AMC Platinum 3 hari.',img:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90',amc:'platinum'}
+          ];
+          function renderProducts(){
+            const q=(document.getElementById('productSearch')?.value||'').toLowerCase();
+            const a=products.filter(x=>(x.name+x.desc).toLowerCase().includes(q));
             const fallback='https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=90';
-            g.innerHTML=books.map((p,i)=>'<div class="card product"><img src="'+p[1]+'" onerror="this.src=\''+fallback+'\'"><h3>'+p[0]+'</h3><div class="muted">'+p[2]+'</div><button class="btn primary" onclick="toast(\'Membuka detail '+p[0]+'\')">Detail Produk</button></div>').join('')+
-              '<div class="card product"><img data-amc-catalog-image="regular"><h3>AMC Reguler</h3><div class="muted">Program kelas AMC Reguler</div><div class="amcPrice">Rp4.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>'+
-              '<div class="card product"><img data-amc-catalog-image="private"><h3>AMC Privat</h3><div class="muted">Program kelas AMC Privat</div><div class="amcPrice">Rp7.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>'+
-              '<div class="card product"><img data-amc-catalog-image="platinum"><h3>AMC Platinum</h3><div class="muted">Program intensif AMC Platinum</div><div class="amcPrice">Rp22.500.000</div><button class="btn primary" onclick="go(\'registration\')">Pilih Kelas</button></div>';
-            loadAMCClassImages();
+            document.getElementById('productsGrid').innerHTML=a.map(x=>`<div class="card product"><img src="${x.img}" alt="${x.name}" onerror="this.src='${fallback}'"><h3>${x.name}</h3><div class="muted">${x.desc}</div><div class="price">${x.price}</div><button class="btn primary" onclick="openProduct('${x.id}')">Lihat Detail</button></div>`).join('')||'<div class="empty">Produk tidak ditemukan.</div>';
           }
+          '''
+          s = s[:start] + replacement + s[end:]
 
-          function loadAMCClassImages(){
+          start = s.find('function loadImages(){')
+          end = s.find('document.addEventListener', start)
+          if start < 0 or end < 0:
+              raise SystemExit('loadImages target not found')
+          replacement = r'''function loadImages(){
             const fallback={
               regular:'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=90',
               private:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=90',
               platinum:'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=90'
             };
-            for(const [kind,src] of Object.entries(fallback)){
-              document.querySelectorAll('[data-amc-image="'+kind+'"],[data-amc-catalog-image="'+kind+'"]').forEach(n=>{n.src=src;n.onerror=()=>{n.src=fallback.regular;}});
-            }
+            const set=(selector,src)=>document.querySelectorAll(selector).forEach(i=>{i.src=src;i.onerror=()=>{i.src=fallback.regular;}});
+            set('#classImg',fallback.regular);
+            Object.entries(fallback).forEach(([k,src])=>set('[data-amc="'+k+'"]',src));
             fetch('https://masfirmanpratama.com/wp-json/wp/v2/media?search=kelas%20amc&per_page=30')
               .then(r=>r.ok?r.json():[]).then(items=>{
                 const imgs=(items||[]).filter(x=>x&&x.source_url).map(x=>x.source_url).filter((v,i,a)=>a.indexOf(v)===i);
                 if(!imgs.length)return;
                 const selected=[imgs[0],imgs[1]||imgs[0],imgs[2]||imgs[1]||imgs[0]];
-                ['regular','private','platinum'].forEach((kind,i)=>{
-                  document.querySelectorAll('[data-amc-image="'+kind+'"],[data-amc-catalog-image="'+kind+'"]').forEach(n=>{n.src=selected[i];});
-                });
+                ['regular','private','platinum'].forEach((k,i)=>set('[data-amc="'+k+'"]',selected[i]));
+                set('#classImg',selected[0]);
+                products.forEach(p=>{if(p.amc){p.img=selected[['regular','private','platinum'].indexOf(p.amc)]||p.img;}});
+                renderProducts();
               }).catch(()=>{});
           }
-
           '''
           s = s[:start] + replacement + s[end:]
           path.write_text(s, encoding='utf-8')
@@ -77,5 +82,5 @@ jobs:
           git config user.email "jfs-ai-technology@users.noreply.github.com"
           git add mas-firman-pratama/demo.html
           git diff --cached --quiet && exit 0
-          git commit -m "Restore Mas Firman catalog book and AMC class images"
+          git commit -m "Restore Mas Firman catalog and AMC class photos"
           git push
