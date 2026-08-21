@@ -6,24 +6,40 @@
   let state = { schedule: { Online:'Jadwal Online belum diisi admin', Reguler:'29 Agustus 2026 · 09.00 WIB · Surabaya', Privat:'Atur jadwal dengan admin', Platinum:'Atur jadwal dengan admin' } };
   let catalog = { products: [], programs: fallback.programs };
   let crm = { contacts: [], bookings: [] };
+  let knowledge = [];
   const $ = id => document.getElementById(id);
   const money = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+  const normalize = s => String(s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  const stop = new Set(['yang','dan','atau','untuk','dari','dengan','ini','itu','apa','saya','mau','bisa','kak','mas','ada','nya','di','ke','yang','berapa']);
+  function tokens(s){return normalize(s).split(' ').filter(x=>x.length>2&&!stop.has(x));}
+  function findKnowledge(question, limit=4){
+    const qt=tokens(question); if(!qt.length) return [];
+    return knowledge.map(item=>{
+      const hay=normalize((item.title||'')+' '+(item.category||'')+' '+(item.content||''));
+      let score=0;
+      qt.forEach(t=>{if(hay.includes(t))score += (normalize(item.title).includes(t)?4:1);});
+      if(normalize(question).includes(normalize(item.title||''))) score+=8;
+      return {...item, _score:score};
+    }).filter(x=>x._score>0).sort((a,b)=>b._score-a._score).slice(0,limit);
+  }
 
   async function loadTenantData() {
     try {
-      const [tenant, products, knowledge] = await Promise.all([
+      const [tenant, products, kb] = await Promise.all([
         JFS_TENANT_SERVICE.getTenant(),
         JFS_TENANT_SERVICE.getProducts(),
         JFS_TENANT_SERVICE.getKnowledge()
       ]);
       catalog.products = products.map(p => ({ id:p.id, sku:p.sku, name:p.name, image:p.image_url||p.image_path||'', description:p.description||'', price:Number(p.price||0), category:p.category||'' }));
+      knowledge = kb || [];
       window.JFS_KNOWLEDGE = knowledge;
       if (tenant?.business_name) document.title = 'JFS AI — ' + tenant.business_name;
       await loadCRM();
-      toast('Supabase aktif · katalog, CRM & booking tersambung');
+      toast('Supabase aktif · katalog, CRM, booking & Knowledge AI tersambung');
     } catch (err) {
       console.error(err);
       catalog.products = fallback.products;
+      knowledge = [];
       window.JFS_KNOWLEDGE = [];
       toast('Gagal membaca data tenant dari Supabase');
     }
@@ -91,8 +107,30 @@
     } catch(err) { console.error(err); toast('Pendaftaran gagal disimpan: '+(err.message||'error')); }
   };
 
-  window.ask=()=>{const q=$('q').value.trim();if(!q)return;$('chat').innerHTML+=`<div class="msg me"></div>`;$('chat').lastElementChild.textContent=q;const z=q.toLowerCase();let a='Saya belum menemukan informasi tersebut di Knowledge Database. Silakan hubungi Admin.';for(const p of catalog.products){if(z.includes(p.name.toLowerCase())||(z.includes('harga')&&z.includes((p.name||'').toLowerCase().split(' ')[1])))a=`${p.name}: ${p.description} Harga ${money(p.price)}.`}for(const p of catalog.programs){if(z.includes(p.type.toLowerCase())||z.includes(p.name.toLowerCase()))a=`${p.name}: ${state.schedule[p.type]||'Jadwal belum diisi admin'}.`}$('chat').innerHTML+=`<div class="msg"></div>`;$('chat').lastElementChild.textContent=a;$('q').value=''};
-  function renderKnowledge(){const k=window.JFS_KNOWLEDGE||[];$('kview').innerHTML=k.length?k.map(x=>`<div class="item"><b>${x.title}</b><p>${x.content}</p></div>`).join(''):'<div class="item">Knowledge tenant belum tersedia.</div>'}
+  window.ask=()=>{
+    const q=$('q').value.trim(); if(!q)return;
+    $('chat').innerHTML+=`<div class="msg me"></div>`; $('chat').lastElementChild.textContent=q;
+    const z=normalize(q);
+    let answer='Saya belum menemukan informasi tersebut di Knowledge Base Mas Firman. Silakan hubungi Admin untuk informasi yang belum tersedia.';
+    const hits=findKnowledge(q,4);
+    const productHit=catalog.products.find(p=>z.includes(normalize(p.name)));
+    const programHit=catalog.programs.find(p=>z.includes(normalize(p.name))||z.includes(normalize(p.type)));
+    if(productHit){
+      answer=`${productHit.name}: ${productHit.description || 'Informasi produk tersedia di katalog.'} Harga ${money(productHit.price)}.`;
+    } else if(programHit){
+      const kbHit=hits.find(x=>normalize(x.title).includes(normalize(programHit.name))) || hits[0];
+      answer=kbHit ? kbHit.content : `${programHit.name}: ${state.schedule[programHit.type]||'Jadwal belum diisi admin'}.`;
+    } else if(hits.length){
+      answer=hits[0].content;
+      if(hits.length>1) answer += `\n\nInformasi terkait: ${hits.slice(1,3).map(x=>x.title).join(', ')}.`;
+    }
+    $('chat').innerHTML+=`<div class="msg"></div>`; $('chat').lastElementChild.textContent=answer; $('q').value='';
+  };
+
+  function renderKnowledge(){
+    const k=knowledge;
+    $('kview').innerHTML=k.length?k.map(x=>`<div class="item"><b>${x.title}</b><small style="display:block;opacity:.65">${x.category||'general'}</small><p>${x.content}</p></div>`).join(''):'<div class="item">Knowledge tenant belum tersedia.</div>';
+  }
   window.toast=m=>{const t=$('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)};
   window.wa=text=>window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener');
   renderProducts();
