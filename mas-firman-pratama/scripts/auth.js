@@ -59,7 +59,8 @@ async function requireTenantAccess() {
     return null;
   }
 
-  // Small tenant-session badge and sign-out action. Authorization remains enforced by RLS.
+  window.__JFS_ACCESS_ROLE = String(access.membership?.role || '').toLowerCase();
+
   const badge = document.createElement('div');
   badge.style.cssText='position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:8px;background:#101b2f;border:1px solid #29415f;color:#dce8f8;padding:8px 10px;border-radius:12px;font:12px Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
   badge.innerHTML='<span>● Tenant Secure</span><button id="jfsTenantLogout" style="border:0;border-radius:8px;padding:6px 9px;cursor:pointer">Keluar</button>';
