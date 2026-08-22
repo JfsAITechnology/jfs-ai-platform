@@ -1,59 +1,22 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Login — Mas Firman Pratama | JFS AI</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#06101f,#102443);font-family:Arial,sans-serif;color:#fff;padding:20px}.box{width:min(430px,100%);background:rgba(16,27,47,.96);border:1px solid #29415f;border-radius:20px;padding:32px;box-shadow:0 20px 70px rgba(0,0,0,.35)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brand img{width:52px;height:52px;object-fit:contain}.brand b{display:block;font-size:20px}.brand small{color:#8fa4c0}.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:#12345b;color:#75b7ff;font-size:12px;font-weight:700}.muted{color:#aebbd0;line-height:1.6}.field{margin:16px 0}.field label{display:block;margin-bottom:7px;font-size:13px;color:#b8c7da}.field input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid #314864;background:#091527;color:#fff;outline:none}.field input:focus{border-color:#5aa9ff}.btn{width:100%;padding:13px;border:0;border-radius:10px;background:#2d8cff;color:#fff;font-weight:700;cursor:pointer;margin-top:8px}.btn:disabled{opacity:.6;cursor:wait}.error{min-height:22px;color:#ff9e9e;margin:12px 0;font-size:13px}.footer{margin-top:20px;font-size:12px;color:#71849e;text-align:center}
-</style>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#06101f,#102443);font-family:Arial,sans-serif;color:#fff;padding:20px}.box{width:min(430px,100%);background:rgba(16,27,47,.96);border:1px solid #29415f;border-radius:20px;padding:32px;box-shadow:0 20px 70px rgba(0,0,0,.35)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brand img{width:52px;height:52px;object-fit:contain}.brand b{display:block;font-size:20px}.brand small{color:#8fa4c0}.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:#12345b;color:#75b7ff;font-size:12px;font-weight:700}.muted{color:#aebbd0;line-height:1.6}.field{margin:16px 0}.field label{display:block;margin-bottom:7px;font-size:13px;color:#b8c7da}.field input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid #314864;background:#091527;color:#fff;outline:none}.btn{width:100%;padding:13px;border:0;border-radius:10px;background:#2d8cff;color:#fff;font-weight:700;cursor:pointer;margin-top:8px}.btn:disabled{opacity:.6;cursor:wait}.error{min-height:22px;color:#ff9e9e;margin:12px 0;font-size:13px}.footer{margin-top:20px;font-size:12px;color:#71849e;text-align:center}</style>
 </head>
-<body>
-<section class="box">
-  <div class="brand"><img src="../assets/brand/jfs-ai-logo.svg" alt="JFS AI"><div><b>JFS AI</b><small>TECHNOLOGY</small></div></div>
-  <span class="tag">TENANT • MAS FIRMAN PRATAMA</span>
-  <h1>Login Dashboard</h1>
-  <p class="muted">Masuk menggunakan akun yang sudah terdaftar dan memiliki membership aktif pada tenant Mas Firman Pratama.</p>
-  <form id="loginForm">
-    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
-    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
-    <div id="error" class="error"></div>
-    <button id="submit" class="btn" type="submit">Masuk ke Dashboard</button>
-  </form>
-  <div class="footer">JFS AI Technology • Secure tenant access</div>
-</section>
+<body><section class="box"><div class="brand"><img src="../assets/brand/jfs-ai-logo.svg" alt="JFS AI"><div><b>JFS AI</b><small>TECHNOLOGY</small></div></div><span class="tag">TENANT • MAS FIRMAN PRATAMA</span><h1>Login Dashboard</h1><p class="muted">Masuk menggunakan akun yang sudah terdaftar dan memiliki membership aktif pada tenant Mas Firman Pratama.</p><form id="loginForm"><div class="field"><label>Email</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" required></div><div id="error" class="error"></div><button id="submit" class="btn" type="submit">Masuk ke Dashboard</button></form><div class="footer">JFS AI Technology • Secure tenant access</div></section>
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co';
-const KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD';
-const TENANT_ID='f0098e1c-da0c-4411-8720-9c99a3cfb115';
-const supabase=createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const form=document.getElementById('loginForm'), submit=document.getElementById('submit'), error=document.getElementById('error');
-const params=new URLSearchParams(location.search); const next=params.get('next');
-async function membership(){
-  const {data,error:rpcError}=await supabase.rpc('jfs_check_tenant_membership',{p_tenant_id:TENANT_ID});
-  if(rpcError) throw rpcError;
-  return Array.isArray(data) ? data[0] || null : data || null;
-}
-async function routeIfAuthorized(){
-  const {data:{user}}=await supabase.auth.getUser();
-  if(!user)return;
-  try { if(await membership()) location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html'); } catch(e) { console.error(e); }
-}
+import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co',KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD',TENANT_ID='f0098e1c-da0c-4411-8720-9c99a3cfb115';
+const supabase=createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'jfs-ai-auth'}});
+const form=document.getElementById('loginForm'),submit=document.getElementById('submit'),error=document.getElementById('error');
+const params=new URLSearchParams(location.search),next=params.get('next');
+const target=next&&next.startsWith(location.origin)?next:'../app/dashboard.html';
+async function waitForSession(){for(let i=0;i<10;i++){const {data}=await supabase.auth.getSession();if(data?.session?.user)return data.session.user;await new Promise(r=>setTimeout(r,250));}return null;}
+async function membership(){const user=await waitForSession();if(!user)throw new Error('NO_SESSION');const{data,error:e}=await supabase.rpc('jfs_check_tenant_membership',{p_tenant_id:TENANT_ID});if(e)throw e;return{user,membership:Array.isArray(data)?data[0]||null:data||null};}
+async function routeIfAuthorized(){try{const r=await membership();if(r.membership)location.replace(target);}catch(e){console.debug('tenant precheck',e);}}
 routeIfAuthorized();
-form.addEventListener('submit',async(e)=>{
-  e.preventDefault(); error.textContent=''; submit.disabled=true; submit.textContent='Memeriksa...';
-  const email=document.getElementById('email').value.trim(); const password=document.getElementById('password').value;
-  const {error:loginError}=await supabase.auth.signInWithPassword({email,password});
-  if(loginError){ error.textContent='Email atau password tidak valid.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard'; return; }
-  try {
-    const m=await membership();
-    if(!m){ await supabase.auth.signOut({scope:'local'}); error.textContent='Akun berhasil login, tetapi belum memiliki akses ke tenant Mas Firman Pratama.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard'; return; }
-    location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html');
-  } catch(e) {
-    console.error(e); error.textContent='Login berhasil, tetapi pemeriksaan akses tenant gagal. Silakan coba lagi.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard';
-  }
-});
-</script>
-</body>
-</html>
+form.addEventListener('submit',async e=>{e.preventDefault();error.textContent='';submit.disabled=true;submit.textContent='Memeriksa...';try{const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;const{error:loginError}=await supabase.auth.signInWithPassword({email,password});if(loginError)throw new Error('INVALID_LOGIN');const r=await membership();if(!r.membership){throw new Error('NO_TENANT');}submit.textContent='Membuka dashboard...';await new Promise(x=>setTimeout(x,150));location.replace(target);}catch(e){console.error(e);if(e.message==='INVALID_LOGIN')error.textContent='Email atau password tidak valid.';else if(e.message==='NO_TENANT')error.textContent='Login berhasil, tetapi membership tenant belum terdeteksi. Silakan refresh dan coba lagi.';else error.textContent='Login berhasil, tetapi sesi belum siap. Silakan coba lagi.';submit.disabled=false;submit.textContent='Masuk ke Dashboard';}});
+supabase.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session?.user)setTimeout(()=>routeIfAuthorized(),100);});
+</script></body></html>
