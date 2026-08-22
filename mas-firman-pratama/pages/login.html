@@ -30,23 +30,29 @@ const TENANT_ID='f0098e1c-da0c-4411-8720-9c99a3cfb115';
 const supabase=createClient(SUPABASE_URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const form=document.getElementById('loginForm'), submit=document.getElementById('submit'), error=document.getElementById('error');
 const params=new URLSearchParams(location.search); const next=params.get('next');
-
+async function membership(){
+  const {data,error:rpcError}=await supabase.rpc('jfs_check_tenant_membership',{p_tenant_id:TENANT_ID});
+  if(rpcError) throw rpcError;
+  return Array.isArray(data) ? data[0] || null : data || null;
+}
 async function routeIfAuthorized(){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)return;
-  const {data:membership}=await supabase.from('tenant_users').select('tenant_id,role,is_active').eq('tenant_id',TENANT_ID).eq('user_id',user.id).eq('is_active',true).maybeSingle();
-  if(membership) location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html');
+  try { if(await membership()) location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html'); } catch(e) { console.error(e); }
 }
 routeIfAuthorized();
-
 form.addEventListener('submit',async(e)=>{
   e.preventDefault(); error.textContent=''; submit.disabled=true; submit.textContent='Memeriksa...';
   const email=document.getElementById('email').value.trim(); const password=document.getElementById('password').value;
   const {error:loginError}=await supabase.auth.signInWithPassword({email,password});
   if(loginError){ error.textContent='Email atau password tidak valid.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard'; return; }
-  const {data:membership,error:membershipError}=await supabase.from('tenant_users').select('tenant_id,role,is_active').eq('tenant_id',TENANT_ID).eq('user_id',(await supabase.auth.getUser()).data.user.id).eq('is_active',true).maybeSingle();
-  if(membershipError||!membership){ await supabase.auth.signOut(); error.textContent='Akun berhasil login, tetapi belum memiliki akses ke tenant Mas Firman Pratama.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard'; return; }
-  location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html');
+  try {
+    const m=await membership();
+    if(!m){ await supabase.auth.signOut({scope:'local'}); error.textContent='Akun berhasil login, tetapi belum memiliki akses ke tenant Mas Firman Pratama.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard'; return; }
+    location.replace(next && next.startsWith(location.origin) ? next : '../app/dashboard.html');
+  } catch(e) {
+    console.error(e); error.textContent='Login berhasil, tetapi pemeriksaan akses tenant gagal. Silakan coba lagi.'; submit.disabled=false; submit.textContent='Masuk ke Dashboard';
+  }
 });
 </script>
 </body>
