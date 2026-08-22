@@ -3,145 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JFS AI Admin — Subscription & Tenant Management</title>
+<title>JFS AI Admin — Tenant & Subscription</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{font-family:system-ui,-apple-system,Segoe UI,Arial;background:#f4f7fb;color:#172033;margin:0}.wrap{max-width:1100px;margin:auto;padding:28px}.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 8px 30px #0001;margin-bottom:18px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}h1{margin:0 0 8px}button{padding:10px 14px;border:0;border-radius:9px;cursor:pointer;background:#087cf0;color:#fff;font-weight:700}button:disabled{opacity:.6;cursor:not-allowed}.muted{color:#68758b}.hidden{display:none}.msg{margin-top:12px;color:#b42318;white-space:pre-wrap}.ok{color:#067647}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8f5e9;color:#067647}.danger{background:#fee;color:#b42318}.tenant{border:1px solid #e1e7f0;border-radius:12px;padding:16px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}input{padding:10px;border:1px solid #d5dce8;border-radius:8px;min-width:180px;box-sizing:border-box}.login-card{max-width:620px;margin:8vh auto}.status{margin:10px 0;padding:10px;border-radius:8px;background:#f7f9fc}.error{color:#b42318}.success{color:#067647}
+body{font-family:system-ui,-apple-system,Segoe UI,Arial;background:#f4f7fb;color:#172033;margin:0}.wrap{max-width:1180px;margin:auto;padding:24px}.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 8px 30px #0001;margin-bottom:16px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}h1{margin:0 0 6px}.muted{color:#68758b}.hidden{display:none}.msg{margin-top:12px;color:#b42318;white-space:pre-wrap}.ok{color:#067647}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8f5e9;color:#067647;font-weight:700}.danger{background:#fee;color:#b42318}.warn{background:#fff4d6;color:#8a5a00}.tenant{border:1px solid #e1e7f0;border-radius:14px;padding:18px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.stat{background:#f7f9fc;border-radius:12px;padding:15px}input,select,textarea{padding:10px;border:1px solid #d5dce8;border-radius:8px;box-sizing:border-box}input{min-width:230px}button{padding:10px 14px;border:0;border-radius:9px;cursor:pointer;background:#087cf0;color:#fff;font-weight:700}button.secondary{background:#64748b}button.dangerBtn{background:#c62828}button.successBtn{background:#087647}button:disabled{opacity:.55;cursor:not-allowed}.login-card{max-width:680px;margin:8vh auto}.subbox{background:#f7f9fc;border-radius:12px;padding:14px;margin-top:12px}.actions{margin-top:12px}.small{font-size:13px}.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:18px}.modal>div{background:#fff;border-radius:16px;padding:22px;max-width:520px;width:100%}
 </style>
 </head>
 <body>
 <div class="wrap">
 <section id="login" class="card login-card">
-<h1>🔐 JFS AI Admin</h1>
-<p class="muted">Halaman ini khusus administrator JFS AI Technology.</p>
-<form id="loginForm">
-<div class="row">
-<input id="email" type="email" autocomplete="username" placeholder="Email admin" required>
-<input id="password" type="password" autocomplete="current-password" placeholder="Password" required>
-<button id="loginBtn" type="submit">Login</button>
-</div>
-</form>
+<h1>🔐 JFS AI Super Admin</h1><p class="muted">Kontrol tenant dan subscription hanya untuk Super Admin JFS AI Technology.</p>
+<form id="loginForm"><div class="row"><input id="email" type="email" autocomplete="username" placeholder="Email Super Admin" required><input id="password" type="password" autocomplete="current-password" placeholder="Password" required><button id="loginBtn">Login</button></div></form>
 <p id="loginMsg" class="msg"></p>
 </section>
 <section id="app" class="hidden">
-<div class="row" style="margin-bottom:18px">
-<div style="flex:1"><h1>JFS AI Subscription Manager</h1><div id="adminIdentity" class="muted"></div></div>
-<button id="refresh" type="button">Refresh</button><button id="logout" type="button">Logout</button>
-</div>
+<div class="row" style="margin-bottom:18px"><div style="flex:1"><h1>JFS AI Tenant & Subscription Engine</h1><div id="adminIdentity" class="muted"></div></div><button id="refresh" class="secondary">Refresh</button><button id="logout" class="secondary">Logout</button></div>
 <div id="stats" class="grid"></div>
-<div class="card"><div class="row"><input id="search" placeholder="Cari nama bisnis / kode tenant..."></div><div id="list">Memuat tenant...</div></div>
+<div class="card"><div class="row"><input id="search" placeholder="Cari nama bisnis / kode tenant..."><select id="statusFilter"><option value="">Semua status</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="expired">Expired</option><option value="pending">Pending</option><option value="cancelled">Cancelled</option><option value="none">Belum ada subscription</option></select></div><div id="list">Memuat...</div></div>
 </section>
 </div>
+<div id="modal" class="modal hidden"><div><h3 id="modalTitle">Konfirmasi</h3><p id="modalText"></p><textarea id="modalNotes" rows="3" style="width:100%" placeholder="Catatan audit (opsional)"></textarea><div class="row" style="margin-top:12px"><button id="modalCancel" class="secondary">Batal</button><button id="modalConfirm">Konfirmasi</button></div></div></div>
 <script>
 'use strict';
 const SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co';
 const SUPABASE_KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD';
-let db=null,tenants=[],plans=[],busy=false;
+let db=null,tenants=[],plans=[],subscriptions=new Map(),pendingAction=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const fmt=v=>v?new Date(v+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'-';
-function setMsg(text='',type=''){const el=$('loginMsg');el.textContent=text;el.className='msg '+(type==='success'?'ok':'');}
-function friendlyAuthError(error){
- const m=String(error?.message||error||'Terjadi kesalahan.');
- if(/invalid login credentials/i.test(m))return 'Email atau password admin salah.';
- if(/email not confirmed/i.test(m))return 'Email akun belum dikonfirmasi di Supabase Auth.';
- if(/failed to fetch|network/i.test(m))return 'Koneksi ke server autentikasi gagal. Coba refresh halaman dan login lagi.';
- return m;
-}
-function makeClient(){
- if(!window.supabase||typeof window.supabase.createClient!=='function')throw new Error('Library Supabase belum termuat. Silakan refresh halaman.');
- if(!db)db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'jfs-ai-admin-auth'}});
- return db;
-}
-async function getAdminUser(){
- const client=makeClient();
- const {data:{user},error}=await client.auth.getUser();
- if(error)throw new Error('Pemeriksaan sesi gagal: '+friendlyAuthError(error));
- if(!user)return null;
- const {data,error:e}=await client.from('jfs_admins').select('user_id').eq('user_id',user.id).maybeSingle();
- if(e)throw new Error('Akses admin gagal diperiksa: '+e.message);
- return data&&data.user_id===user.id?user:null;
-}
-function openApp(user){
- $('login').classList.add('hidden');$('app').classList.remove('hidden');
- $('adminIdentity').textContent='Admin: '+(user.email||'Akun admin');
-}
-function showLogin(text=''){
- $('login').classList.remove('hidden');$('app').classList.add('hidden');
- if(text)setMsg(text);
-}
-async function start(){
- try{
-  makeClient();
-  const {data:{session},error}=await db.auth.getSession();
-  if(error)throw error;
-  if(!session){showLogin('');return;}
-  const user=await getAdminUser();
-  if(!user){await db.auth.signOut();showLogin('Sesi ditemukan, tetapi akun ini belum terdaftar sebagai admin JFS AI.');return;}
-  openApp(user);
-  await load();
- }catch(e){console.error(e);showLogin(friendlyAuthError(e));}
-}
-$('loginForm').addEventListener('submit',async e=>{
- e.preventDefault();
- if(busy)return;
- busy=true;$('loginBtn').disabled=true;$('loginBtn').textContent='Memeriksa...';setMsg('Memproses login...');
- try{
-  const client=makeClient();
-  await client.auth.signOut({scope:'local'});
-  const email=$('email').value.trim().toLowerCase();
-  const password=$('password').value;
-  const {data,error}=await client.auth.signInWithPassword({email,password});
-  if(error)throw new Error('Login gagal: '+friendlyAuthError(error));
-  if(!data?.user)throw new Error('Login gagal: user tidak ditemukan.');
-  const admin=await getAdminUser();
-  if(!admin){await client.auth.signOut({scope:'local'});throw new Error('Login berhasil, tetapi akun ini belum memiliki akses Admin JFS AI. Gunakan akun admin yang terdaftar.');}
-  openApp(admin);setMsg('');
-  try{await load();}catch(loadError){console.error(loadError);alert('Login berhasil. Namun data dashboard gagal dimuat: '+friendlyAuthError(loadError));}
- }catch(e){console.error(e);showLogin(friendlyAuthError(e));}
- finally{busy=false;$('loginBtn').disabled=false;$('loginBtn').textContent='Login';}
-});
-async function load(){
- const client=makeClient();
- const tr=await client.from('tenants').select('id,tenant_code,business_name,business_type,whatsapp,status').order('business_name');
- if(tr.error)throw new Error('Gagal membaca tenants: '+tr.error.message);
- const pr=await client.from('subscription_plans').select('id,name,duration_months,price').eq('is_active',true).order('duration_months');
- if(pr.error)throw new Error('Gagal membaca paket subscription: '+pr.error.message);
- tenants=tr.data||[];plans=pr.data||[];await render();
-}
-async function subscription(id){return await db.from('tenant_subscriptions').select('id,tenant_id,plan_id,start_date,end_date,status,amount,payment_status').eq('tenant_id',id).order('end_date',{ascending:false}).limit(1).maybeSingle();}
-async function render(){
- const q=$('search').value.trim().toLowerCase();
- const rows=tenants.filter(t=>(t.business_name||'').toLowerCase().includes(q)||(t.tenant_code||'').toLowerCase().includes(q));
- $('stats').innerHTML='<div class="card"><b>'+tenants.length+'</b><br><small>Total Tenant</small></div><div class="card"><b>'+plans.length+'</b><br><small>Paket Subscription</small></div>';
- if(!rows.length){$('list').innerHTML='<p class="muted">Tidak ada tenant.</p>';return;}
- $('list').innerHTML=rows.map(t=>'<div class="tenant"><h3>'+esc(t.business_name)+'</h3><small>Kode: '+esc(t.tenant_code)+' • '+esc(t.business_type||'-')+' • Status tenant: '+esc(t.status)+'</small><div id="s-'+t.id+'" style="margin-top:12px">Memuat subscription...</div></div>').join('');
- for(const t of rows)await renderSub(t);
-}
-async function renderSub(t){
- const el=$('s-'+t.id),r=await subscription(t.id);
- if(r.error){el.innerHTML='<span class="pill danger">Gagal membaca subscription: '+esc(r.error.message)+'</span>';return;}
- const s=r.data;
- if(!s){el.innerHTML='<span class="pill danger">BELUM ADA SUBSCRIPTION</span>'+planButtons(t.id);return;}
- const expired=!s.end_date||new Date(s.end_date+'T00:00:00')<=new Date();
- const active=s.status==='active'&&!expired;
- el.innerHTML='<span class="pill '+(active?'':'danger')+'">'+(active?'ACTIVE':'LOCKED / '+esc(String(s.status||'unknown').toUpperCase()))+'</span><p>Periode: <b>'+fmt(s.start_date)+'</b> → <b>'+fmt(s.end_date)+'</b><br>Status pembayaran: '+esc(s.payment_status||'pending')+'</p>'+planButtons(t.id);
-}
-function planButtons(id){return '<div class="row">'+plans.map(p=>'<button type="button" onclick="activate(\''+id+'\',\''+p.id+'\')">Aktifkan '+esc(p.duration_months)+' Bulan</button>').join('')+'</div>';}
-async function activate(tenantId,planId){
- if(!confirm('Aktifkan subscription tenant ini sekarang?'))return;
- try{
-  const plan=plans.find(p=>p.id===planId);if(!plan)throw new Error('Paket tidak ditemukan.');
-  const {data,error}=await db.rpc('renew_tenant_subscription',{p_tenant_id:tenantId,p_plan_id:plan.id,p_notes:'Diaktifkan oleh admin JFS AI'});
-  if(error)throw error;
-  alert('Berhasil. Akses aktif sampai '+fmt(data?.end_date));await load();
- }catch(e){console.error(e);alert('Gagal mengaktifkan subscription: '+friendlyAuthError(e));}
-}
-$('refresh').onclick=()=>load().catch(e=>alert(friendlyAuthError(e)));
-$('search').oninput=()=>render();
-$('logout').onclick=async()=>{try{await db.auth.signOut();}finally{$('email').value='';$('password').value='';showLogin('Anda sudah logout.');}};
-window.addEventListener('pageshow',()=>{if(!db)start();});
-start();
+function msg(text='',ok=false){$('loginMsg').textContent=text;$('loginMsg').className='msg '+(ok?'ok':'');}
+function err(e){const m=String(e?.message||e||'Terjadi kesalahan.');return m;}
+function client(){if(!db)db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'jfs-ai-admin-auth'}});return db;}
+async function isSuperAdmin(){const c=client();const {data:{user},error}=await c.auth.getUser();if(error)throw error;if(!user)return null;const r=await c.from('jfs_admins').select('user_id').eq('user_id',user.id).maybeSingle();if(r.error)throw r.error;return r.data?user:null;}
+function open(user){$('login').classList.add('hidden');$('app').classList.remove('hidden');$('adminIdentity').textContent='Super Admin: '+(user.email||user.id);}
+function loginView(t=''){ $('login').classList.remove('hidden');$('app').classList.add('hidden');if(t)msg(t); }
+async function boot(){try{client();const {data:{session},error}=await db.auth.getSession();if(error)throw error;if(!session){loginView();return}const u=await isSuperAdmin();if(!u){await db.auth.signOut();loginView('Akun ini bukan Super Admin JFS AI.');return}open(u);await load();}catch(e){console.error(e);loginView(err(e));}}
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginBtn').disabled=true;msg('Memeriksa akses...');try{await client().auth.signOut({scope:'local'});const r=await client().auth.signInWithPassword({email:$('email').value.trim().toLowerCase(),password:$('password').value});if(r.error)throw r.error;const u=await isSuperAdmin();if(!u){await client().auth.signOut({scope:'local'});throw new Error('Login berhasil, tetapi akun tidak memiliki hak Super Admin.')}open(u);msg('');await load();}catch(e){console.error(e);loginView(err(e));}finally{$('loginBtn').disabled=false;}};
+async function load(){const c=client();const [tr,pr,sr]=await Promise.all([c.from('tenants').select('id,tenant_code,business_name,business_type,whatsapp,status').order('business_name'),c.from('subscription_plans').select('id,name,duration_months,price').eq('is_active',true).order('duration_months'),c.from('tenant_subscription_status').select('*')]);if(tr.error)throw tr.error;if(pr.error)throw pr.error;if(sr.error)throw sr.error;tenants=tr.data||[];plans=pr.data||[];subscriptions=new Map((sr.data||[]).map(s=>[s.tenant_id,s]));render();}
+function effective(s){if(!s)return 'none';if(s.effective_status==='active'&&s.end_date&&new Date(s.end_date+'T00:00:00')<new Date())return 'expired';return s.effective_status;}
+function render(){const q=$('search').value.trim().toLowerCase(),f=$('statusFilter').value;const rows=tenants.filter(t=>{const s=subscriptions.get(t.id),st=effective(s);return(!q||(t.business_name||'').toLowerCase().includes(q)||(t.tenant_code||'').toLowerCase().includes(q))&&(!f||st===f)});const counts={active:0,suspended:0,expired:0,pending:0,none:0};tenants.forEach(t=>{const st=effective(subscriptions.get(t.id));if(counts[st]!==undefined)counts[st]++;});$('stats').innerHTML='<div class="stat"><b>'+tenants.length+'</b><br><small>Total Tenant</small></div><div class="stat"><b>'+counts.active+'</b><br><small>Subscription Active</small></div><div class="stat"><b>'+counts.suspended+'</b><br><small>Suspended</small></div><div class="stat"><b>'+counts.expired+'</b><br><small>Expired</small></div>';if(!rows.length){$('list').innerHTML='<p class="muted">Tidak ada tenant sesuai filter.</p>';return}$('list').innerHTML=rows.map(card).join('');}
+function card(t){const s=subscriptions.get(t.id),st=effective(s),active=st==='active';let badge=st==='active'?'<span class="pill">ACTIVE</span>':st==='none'?'<span class="pill danger">BELUM ADA SUBSCRIPTION</span>':'<span class="pill danger">'+esc(st.toUpperCase())+'</span>';let info=s?'<p class="small">Paket: <b>'+esc(s.plan_name||'-')+'</b> ('+esc(s.duration_months||'-')+' bulan)<br>Periode: <b>'+fmt(s.start_date)+'</b> → <b>'+fmt(s.end_date)+'</b><br>Pembayaran: '+esc(s.payment_status||'-')+' • Disimpan: '+esc(s.stored_status||'-')+'</p>':'<p class="small">Tenant belum memiliki subscription.</p>';let buttons='';if(s){if(active)buttons='<button class="dangerBtn" onclick="ask(\'deactivate\',\''+s.subscription_id+'\',\''+esc(t.business_name)+'\')">Nonaktifkan</button>';else buttons='<button class="successBtn" onclick="ask(\'reactivate\',\''+s.subscription_id+'\',\''+esc(t.business_name)+'\')">Reactivate</button>';}buttons+=plans.map(p=>'<button onclick="askActivate(\''+t.id+'\',\''+p.id+'\',\''+esc(t.business_name)+'\')">Aktifkan '+p.duration_months+' Bulan</button>').join('');return '<div class="tenant"><div class="row"><div style="flex:1"><h3>'+esc(t.business_name)+'</h3><div class="muted small">'+esc(t.tenant_code)+' • '+esc(t.business_type||'-')+'</div></div>'+badge+'</div><div class="subbox">'+info+'<div class="row actions">'+buttons+'</div></div></div>';}
+function ask(type,id,name){pendingAction={type,id};$('modalTitle').textContent=type==='deactivate'?'Nonaktifkan Subscription':'Reactivate Subscription';$('modalText').textContent=(type==='deactivate'?'Tenant '+name+' akan dinonaktifkan secara manual.':'Tenant '+name+' akan diaktifkan kembali secara manual.')+' Tindakan ini tercatat di audit history.';$('modalNotes').value='';$('modal').classList.remove('hidden');}
+function askActivate(tid,pid,name){pendingAction={type:'activate',tenantId:tid,planId:pid};$('modalTitle').textContent='Aktifkan Subscription';$('modalText').textContent='Aktifkan subscription '+name+' dengan paket yang dipilih sekarang?';$('modalNotes').value='';$('modal').classList.remove('hidden');}
+$('modalCancel').onclick=()=>{$('modal').classList.add('hidden');pendingAction=null};
+$('modalConfirm').onclick=async()=>{if(!pendingAction)return;const a=pendingAction;$('modalConfirm').disabled=true;try{const notes=$('modalNotes').value.trim()||null;let r;if(a.type==='activate')r=await db.rpc('admin_activate_subscription_for_tenant',{p_tenant_id:a.tenantId,p_plan_id:a.planId,p_start_date:new Date().toISOString().slice(0,10),p_notes:notes});else if(a.type==='deactivate')r=await db.rpc('admin_deactivate_subscription',{p_subscription_id:a.id,p_notes:notes});else r=await db.rpc('admin_reactivate_subscription',{p_subscription_id:a.id,p_notes:notes});if(r.error)throw r.error;$('modal').classList.add('hidden');pendingAction=null;await load();}catch(e){alert('Gagal: '+err(e));}finally{$('modalConfirm').disabled=false;}};
+$('refresh').onclick=()=>load().catch(e=>alert(err(e)));$('search').oninput=render;$('statusFilter').onchange=render;$('logout').onclick=async()=>{await client().auth.signOut();loginView('Anda sudah logout.');};
+boot();
 </script>
 </body>
 </html>
