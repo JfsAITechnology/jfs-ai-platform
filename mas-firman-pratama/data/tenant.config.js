@@ -8,3 +8,11 @@ window.JFS_TENANT = Object.freeze({
   brand: 'JFS AI Technology',
   website: 'https://masfirmanpratama.com/'
 });
+
+// Enhancement layer: keeps the existing dashboard structure and adds the AMC 5-step flow.
+(function(){
+  const s=document.createElement('script');
+  s.src='../scripts/amc-flow.js?v=20260822';
+  s.defer=true;
+  document.head.appendChild(s);
+})();
