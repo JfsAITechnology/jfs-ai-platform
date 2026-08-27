@@ -1,1 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 203 203" role="img" aria-label="JFS AI Technology"><image x="0" y="0" width="203" height="203" href="data:image/png;base64," + data + ""/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JFS AI Technology">
+<defs>
+ <radialGradient id="bg" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#142b4b"/><stop offset="1" stop-color="#06101f"/></radialGradient>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#56e0ff"/><stop offset=".5" stop-color="#118fd0"/><stop offset="1" stop-color="#164fae"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#36d5ff"/><stop offset="1" stop-color="#1d65db"/></linearGradient>
+ <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#b9c3cf"/></linearGradient>
+ <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-opacity=".55"/></filter>
+</defs>
+<circle cx="256" cy="256" r="247" fill="#eef2f5"/>
+<circle cx="256" cy="256" r="232" fill="url(#bg)" stroke="url(#edge)" stroke-width="10"/>
+<circle cx="256" cy="256" r="210" fill="none" stroke="#2f82c8" stroke-width="3" opacity=".9"/>
+<g fill="none" stroke="#7bdcff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+ <path d="M165 132c-25-25-58-1-48 29-27 6-28 44 0 50 7 27 45 30 58 7 26 9 44-25 25-42 19-20-4-48-35-44z"/>
+ <path d="M347 132c25-25 58-1 48 29 27 6 28 44 0 50-7 27-45 30-58 7-26 9-44-25-25-42-19-20 4-48 35-44z"/>
+ <path d="M256 119v91M218 145l20 20v22M294 145l-20 20v22M191 174h-31M321 174h31"/>
+ <circle cx="238" cy="165" r="6" fill="#7bdcff"/><circle cx="274" cy="165" r="6" fill="#7bdcff"/><circle cx="160" cy="174" r="6" fill="#7bdcff"/><circle cx="352" cy="174" r="6" fill="#7bdcff"/>
+</g>
+<g filter="url(#shadow)" font-family="Arial,Helvetica,sans-serif" font-weight="900" text-anchor="middle">
+ <text x="207" y="300" font-size="166" fill="url(#silver)" letter-spacing="-14">JF</text>
+ <text x="339" y="300" font-size="166" fill="url(#blue)" letter-spacing="-14">S</text>
+ <text x="256" y="374" font-size="86" fill="url(#blue)" letter-spacing="8">AI</text>
+ <text x="256" y="425" font-size="31" fill="#f5f7fa" letter-spacing="7">TECHNOLOGY</text>
+</g>
+<g fill="none" stroke="#4ebff1" stroke-width="4" stroke-linecap="round" opacity=".8"><path d="M115 387l45 28h44M397 387l-45 28h-44M128 351l-22 20M384 351l22 20"/></g>
+</svg>
