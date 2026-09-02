@@ -1,0 +1,53 @@
+name: Inventory CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**'
+  push:
+    branches:
+      - feature/inventory-stock
+
+permissions:
+  contents: read
+
+jobs:
+  validate-inventory:
+    name: Validate Inventory Branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify inventory files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f inventory.html
+          test -f core-services.js
+          echo "Required JFS AI inventory files are present."
+
+      - name: Basic JavaScript syntax check
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v node >/dev/null 2>&1; then
+            node --check core-services.js
+          else
+            echo "Node.js is unavailable; skipping JS syntax check."
+          fi
+
+      - name: Check for accidental secret-like strings
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '(sk-[A-Za-z0-9]{20,}|service_role|SUPABASE_SERVICE_ROLE_KEY)' \
+            --exclude-dir=.git --exclude='*.md' .; then
+            echo "Potential secret-like value detected. Review before merge."
+            exit 1
+          fi
+          echo "No known secret-like patterns detected."
