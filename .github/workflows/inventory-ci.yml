@@ -107,9 +107,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Playwright Chromium
+      - name: Install Playwright
         shell: bash
-        run: npx --yes playwright@1.55.0 install --with-deps chromium
+        run: |
+          npm install --global playwright@1.55.0
+          playwright install --with-deps chromium
 
       - name: Start local server
         shell: bash
@@ -127,8 +129,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat > /tmp/jfs-smoke.js <<'EOF'
-          const { chromium } = require('/opt/hostedtoolcache/node/22.*/x64/lib/node_modules/playwright');
+          NODE_PATH="$(npm root -g)" node <<'EOF'
+          const { chromium } = require('playwright');
           (async () => {
             const browser = await chromium.launch({headless: true});
             const page = await browser.newPage();
@@ -139,4 +141,3 @@ jobs:
             await browser.close();
           })().catch(err => { console.error(err); process.exit(1); });
           EOF
-          node /tmp/jfs-smoke.js
