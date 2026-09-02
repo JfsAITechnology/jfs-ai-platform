@@ -1,21 +1,11 @@
 const { chromium } = require('playwright');
 
 const required = [
-  'E2E_BASE_URL',
-  'E2E_SUPABASE_URL',
-  'E2E_SUPABASE_ANON_KEY',
-  'E2E_USER_A_EMAIL',
-  'E2E_USER_A_PASSWORD',
-  'E2E_USER_B_EMAIL',
-  'E2E_USER_B_PASSWORD',
-  'E2E_TENANT_A_ID',
-  'E2E_PRODUCT_A_ID',
-  'E2E_TENANT_B_ID',
-  'E2E_PRODUCT_B_ID',
+  'E2E_BASE_URL', 'E2E_SUPABASE_URL', 'E2E_SUPABASE_ANON_KEY',
+  'E2E_USER_A_EMAIL', 'E2E_USER_A_PASSWORD', 'E2E_USER_B_EMAIL', 'E2E_USER_B_PASSWORD',
+  'E2E_TENANT_A_ID', 'E2E_PRODUCT_A_ID', 'E2E_TENANT_B_ID', 'E2E_PRODUCT_B_ID',
 ];
-for (const name of required) {
-  if (!process.env[name]) throw new Error(`Missing required GitHub Actions secret/env: ${name}`);
-}
+for (const name of required) if (!process.env[name]) throw new Error(`Missing required GitHub Actions secret/env: ${name}`);
 
 const BASE_URL = process.env.E2E_BASE_URL.replace(/\/$/, '');
 const SUPABASE_URL = process.env.E2E_SUPABASE_URL;
@@ -64,12 +54,8 @@ async function expectRpcDenied(page, tenantId, productId) {
   return page.evaluate(async ({ url, key, tenantId, productId }) => {
     const client = window.supabase.createClient(url, key);
     const { data, error } = await client.rpc('jfs_adjust_inventory', {
-      p_tenant_id: tenantId,
-      p_product_id: productId,
-      p_movement_type: 'stock_in',
-      p_quantity: 1,
-      p_note: 'E2E unauthorized mutation must fail',
-      p_reference: 'E2E-SECURITY',
+      p_tenant_id: tenantId, p_product_id: productId, p_movement_type: 'stock_in',
+      p_quantity: 1, p_note: 'E2E unauthorized mutation must fail', p_reference: 'E2E-SECURITY',
     });
     return { data, error: error ? error.message : null };
   }, { url: SUPABASE_URL, key: SUPABASE_ANON_KEY, tenantId, productId });
@@ -77,14 +63,13 @@ async function expectRpcDenied(page, tenantId, productId) {
 
 async function changeStock(page, type, productId, note) {
   const button = type === 'stock_in' ? 'button.primary' : 'button.danger';
-  const buttons = page.locator(button).filter({ hasText: type === 'stock_in' ? 'Stok Masuk' : 'Stok Keluar' });
-  await buttons.first().click();
+  await page.locator(button).filter({ hasText: type === 'stock_in' ? 'Stok Masuk' : 'Stok Keluar' }).first().click();
   await page.locator('#modalbg.show').waitFor();
   await page.locator('#product').selectOption(productId);
   await page.locator('#amount').fill('1');
   await page.locator('#note').fill(note);
   await page.locator('#saveBtn').click();
-  await page.locator('#modalbg.show').waitFor({ state: 'detached' });
+  await page.locator('#modalbg.show').waitFor({ state: 'hidden' });
   await page.waitForTimeout(500);
 }
 
@@ -95,28 +80,22 @@ async function changeStock(page, type, productId, note) {
     const pageA = await contextA.newPage();
     await signIn(pageA, process.env.E2E_USER_A_EMAIL, process.env.E2E_USER_A_PASSWORD);
 
-    // Login + tenant selection + product visibility.
     await pageA.locator('#tenant').selectOption(TENANT_A);
     await pageA.waitForTimeout(400);
-    const tenantValueA = await pageA.locator('#tenant').inputValue();
-    if (tenantValueA !== TENANT_A) throw new Error('Tenant A selection failed');
-
-    const productRowsA = pageA.locator('#rows tr');
+    if (await pageA.locator('#tenant').inputValue() !== TENANT_A) throw new Error('Tenant A selection failed');
     await pageA.waitForFunction((productId) => Array.from(document.querySelectorAll('#rows button')).some(b => b.getAttribute('onclick')?.includes(productId)), PRODUCT_A);
-    if (await productRowsA.count() === 0) throw new Error('Tenant A has no inventory rows');
+    if (await pageA.locator('#rows tr').count() === 0) throw new Error('Tenant A has no inventory rows');
 
     const before = await dbQuery(pageA, 'inventory', 'id,product_id,quantity', TENANT_A, { product_id: PRODUCT_A });
     if (before.length !== 1) throw new Error(`Expected exactly one Tenant A inventory fixture row, found ${before.length}`);
     const initialQty = Number(before[0].quantity);
 
-    // Stok Masuk: +1.
     const inNote = `E2E-STOCK-IN-${Date.now()}`;
     await changeStock(pageA, 'stock_in', PRODUCT_A, inNote);
     const afterIn = await dbQuery(pageA, 'inventory', 'id,product_id,quantity', TENANT_A, { product_id: PRODUCT_A });
     if (Number(afterIn[0].quantity) !== initialQty + 1) throw new Error(`Stock-in failed: expected ${initialQty + 1}, got ${afterIn[0].quantity}`);
     if (!(await pageA.locator('#history').innerText()).includes(inNote)) throw new Error('Stock-in history is not visible in UI');
 
-    // Stok Keluar: -1, returning to the original quantity.
     const outNote = `E2E-STOCK-OUT-${Date.now()}`;
     await changeStock(pageA, 'stock_out', PRODUCT_A, outNote);
     const afterOut = await dbQuery(pageA, 'inventory', 'id,product_id,quantity', TENANT_A, { product_id: PRODUCT_A });
@@ -124,22 +103,18 @@ async function changeStock(page, type, productId, note) {
     const historyTextA = await pageA.locator('#history').innerText();
     if (!historyTextA.includes(inNote) || !historyTextA.includes(outNote)) throw new Error('Stock movement history is incomplete in UI');
 
-    // Tenant isolation: Tenant A must not read or mutate Tenant B.
     const readB = await expectDeniedOrEmpty(pageA, TENANT_B);
     if (readB.allowed && readB.rows.length > 0) throw new Error('SECURITY FAILURE: Tenant A can read Tenant B inventory');
     const mutateB = await expectRpcDenied(pageA, TENANT_B, PRODUCT_B);
     if (!mutateB.error) throw new Error('SECURITY FAILURE: Tenant A was able to mutate Tenant B inventory');
-
     await contextA.close();
 
-    // Login as Tenant B and verify its own fixture remains intact.
     const contextB = await browser.newContext();
     const pageB = await contextB.newPage();
     await signIn(pageB, process.env.E2E_USER_B_EMAIL, process.env.E2E_USER_B_PASSWORD);
     await pageB.locator('#tenant').selectOption(TENANT_B);
     await pageB.waitForTimeout(400);
-    const tenantValueB = await pageB.locator('#tenant').inputValue();
-    if (tenantValueB !== TENANT_B) throw new Error('Tenant B selection failed');
+    if (await pageB.locator('#tenant').inputValue() !== TENANT_B) throw new Error('Tenant B selection failed');
     await pageB.waitForFunction((productId) => Array.from(document.querySelectorAll('#rows button')).some(b => b.getAttribute('onclick')?.includes(productId)), PRODUCT_B);
     const bRows = await dbQuery(pageB, 'inventory', 'id,product_id,quantity', TENANT_B, { product_id: PRODUCT_B });
     if (bRows.length !== 1) throw new Error(`Expected exactly one Tenant B inventory fixture row, found ${bRows.length}`);
