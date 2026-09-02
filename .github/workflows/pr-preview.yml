@@ -1,0 +1,38 @@
+name: JFS AI PR Preview
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jfs-ai-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build PR preview artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR source
+        uses: actions/checkout@v4
+
+      - name: Prepare preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p preview
+          cp -R . preview/site
+          rm -rf preview/site/.git preview/site/preview
+          printf 'JFS AI PR Preview\nPR: %s\nCommit: %s\n' "${{ github.event.pull_request.number || 'manual' }}" "${GITHUB_SHA}" > preview/README.txt
+
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-ai-pr-preview-${{ github.event.pull_request.number || 'manual' }}
+          path: preview/site
+          if-no-files-found: error
+          retention-days: 7
