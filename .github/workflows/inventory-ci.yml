@@ -4,9 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches:
-      - main
-      - feature/inventory-stock
+    branches: [feature/inventory-stock]
   workflow_dispatch:
 
 permissions:
@@ -21,124 +19,83 @@ jobs:
     name: Static and security checks
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Verify required files
-        shell: bash
+      - uses: actions/checkout@v4
+      - name: Required files
         run: |
-          set -euo pipefail
           test -s index.html
           test -s inventory.html
           test -s core-services.js
           test -s subscription.html
-
-      - name: Validate HTML structure
+      - name: HTML checks
         shell: python
         run: |
           from html.parser import HTMLParser
           from pathlib import Path
-
-          class Parser(HTMLParser):
-              pass
-
-          for name in ("index.html", "inventory.html", "subscription.html"):
-              data = Path(name).read_text(encoding="utf-8")
-              p = Parser()
-              p.feed(data)
-              p.close()
-              if "<!doctype html>" not in data.lower():
-                  raise SystemExit(f"Missing doctype: {name}")
-              print(f"OK: {name}")
-
+          for name in ('index.html','inventory.html','subscription.html'):
+              data=Path(name).read_text(encoding='utf-8')
+              p=HTMLParser(); p.feed(data); p.close()
+              assert '<!doctype html>' in data.lower(), f'Missing doctype: {name}'
+              print('OK:', name)
       - name: JavaScript syntax checks
         shell: python
         run: |
-          import re
-          import subprocess
-          import tempfile
+          import re, subprocess, tempfile
           from pathlib import Path
-
-          files = ["core-services.js", "index.html", "inventory.html", "subscription.html"]
-          for name in files:
-              path = Path(name)
-              if name.endswith(".js"):
-                  result = subprocess.run(["node", "--check", name], text=True, capture_output=True)
-                  if result.returncode:
-                      print(result.stderr)
-                      raise SystemExit(f"JavaScript syntax error: {name}")
-              else:
-                  text = path.read_text(encoding="utf-8")
-                  scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", text, re.I | re.S)
-                  for i, script in enumerate(scripts, 1):
-                      if not script.strip():
-                          continue
-                      with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as f:
-                          f.write(script)
-                          temp = f.name
-                      result = subprocess.run(["node", "--check", temp], text=True, capture_output=True)
-                      Path(temp).unlink(missing_ok=True)
-                      if result.returncode:
-                          print(result.stderr)
-                          raise SystemExit(f"JavaScript syntax error in {name}, inline script #{i}")
-              print(f"OK JS: {name}")
-
-      # Deliberately exclude the workflow directory to avoid matching the scanner's own pattern.
-      - name: Check for accidental secret-like strings
+          for name in ('core-services.js','index.html','inventory.html','subscription.html'):
+              text=Path(name).read_text(encoding='utf-8')
+              scripts=[text] if name.endswith('.js') else re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',text,re.I|re.S)
+              for i,script in enumerate(scripts,1):
+                  if not script.strip(): continue
+                  with tempfile.NamedTemporaryFile('w',suffix='.js',encoding='utf-8',delete=False) as f:
+                      f.write(script); temp=f.name
+                  r=subprocess.run(['node','--check',temp],text=True,capture_output=True)
+                  Path(temp).unlink(missing_ok=True)
+                  if r.returncode:
+                      print(r.stderr); raise SystemExit(f'JavaScript syntax error: {name} #{i}')
+              print('OK JS:',name)
+      - name: Secret pattern check
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE '(sk-[A-Za-z0-9]{20,}|service_role|SUPABASE_SERVICE_ROLE_KEY)' \
-            --exclude-dir=.git --exclude-dir=.github --exclude='*.md' .; then
-            echo "Potential secret-like value detected. Review before merge."
-            exit 1
+          if grep -RInE '(sk-[A-Za-z0-9]{20,}|service_role|SUPABASE_SERVICE_ROLE_KEY)' --exclude-dir=.git --exclude-dir=.github --exclude='*.md' .; then
+            echo 'Potential secret-like value detected.'; exit 1
           fi
-          echo "No known secret-like patterns detected."
 
   smoke:
     name: Browser smoke test
     runs-on: ubuntu-latest
     needs: validate
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Install Playwright
-        shell: bash
         run: |
           npm install --global playwright@1.55.0
           playwright install --with-deps chromium
-
-      - name: Start local server
+      - name: Browser smoke test
         shell: bash
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/jfs-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null && curl -fsS http://127.0.0.1:4173/inventory.html >/dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null && curl -fsS http://127.0.0.1:4173/inventory.html >/dev/null; then break; fi
             sleep 1
           done
-          cat /tmp/jfs-http.log
-          exit 1
-
-      - name: Verify pages in Chromium
-        shell: bash
-        run: |
-          set -euo pipefail
+          curl -fsS http://127.0.0.1:4173/index.html >/dev/null
+          curl -fsS http://127.0.0.1:4173/inventory.html >/dev/null
           NODE_PATH="$(npm root -g)" node <<'EOF'
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch({headless: true});
-            const page = await browser.newPage();
-            await page.goto('http://127.0.0.1:4173/index.html', {waitUntil: 'domcontentloaded'});
-            if (!(await page.title()).includes('JFS AI')) throw new Error('Index title check failed');
-            await page.goto('http://127.0.0.1:4173/inventory.html', {waitUntil: 'domcontentloaded'});
-            if (!(await page.title()).includes('JFS AI')) throw new Error('Inventory title check failed');
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded',timeout:10000});
+            if(!(await page.title()).includes('JFS AI')) throw new Error('Index title check failed');
+            await page.goto('http://127.0.0.1:4173/inventory.html',{waitUntil:'domcontentloaded',timeout:10000});
+            if(!(await page.title()).includes('JFS AI')) throw new Error('Inventory title check failed');
             await browser.close();
-          })().catch(err => { console.error(err); process.exit(1); });
+          })().catch(e=>{console.error(e);process.exit(1)});
           EOF
