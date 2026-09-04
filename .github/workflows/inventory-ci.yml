@@ -88,7 +88,7 @@ jobs:
         run: |
           set -euo pipefail
           if grep -RInE '(sk-[A-Za-z0-9]{20,}|service_role|SUPABASE_SERVICE_ROLE_KEY)' \
-            --exclude-dir=.git --exclude='*.md' .; then
+            --exclude-dir=.git --exclude-dir=.github --exclude='*.md' .; then
             echo "Potential secret-like value detected. Review before merge."
             exit 1
           fi
