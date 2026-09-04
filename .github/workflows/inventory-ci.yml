@@ -83,6 +83,7 @@ jobs:
                           raise SystemExit(f"JavaScript syntax error in {name}, inline script #{i}")
               print(f"OK JS: {name}")
 
+      # Deliberately exclude the workflow directory to avoid matching the scanner's own pattern.
       - name: Check for accidental secret-like strings
         shell: bash
         run: |
