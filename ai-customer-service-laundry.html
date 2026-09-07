@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="JFS AI Laundry — demo AI Customer Service untuk bisnis laundry.">
+<title>JFS AI Laundry — AI Customer Service</title>
+<style>
+:root{--bg:#07101f;--panel:#0d1931;--input:#07101f;--text:#f5f8ff;--muted:#91a0bd;--line:#ffffff18;--blue:#0879ff;--cyan:#12d7ff;--user:#0b67c8;--bot:#112142;--green:#18a66a;--warn:#ffb84d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);transition:.2s}body.light{--bg:#f4f7fb;--panel:#fff;--input:#f7f9fc;--text:#152033;--muted:#66748b;--line:#172b4618;--bot:#eaf2ff}
+button,input,textarea{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.side{padding:20px;border-right:1px solid var(--line);background:var(--panel)}.brand{display:flex;gap:12px;align-items:center;margin-bottom:20px}.logo{width:50px;height:50px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;background:#10284a;color:#fff;font-weight:900;cursor:pointer;overflow:hidden}.logo img{width:100%;height:100%;object-fit:contain}.brand small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.tag{font-size:9px;color:#45e39f;margin-top:5px}.eyebrow{font-size:10px;color:var(--cyan);letter-spacing:.08em;font-weight:700}.sideTitle{font-size:10px;color:var(--muted);margin:18px 0 7px}.nav{display:grid;gap:7px}.nav button,.theme button{border:1px solid transparent;background:transparent;color:var(--muted);padding:10px;border-radius:9px;cursor:pointer;text-align:left}.nav button.active,.nav button:hover,.theme button:hover{background:#0879ff18;border-color:#0879ff40;color:var(--text)}.theme{display:flex;gap:7px}.theme button{flex:1;text-align:center}.tip{margin-top:18px;padding:12px;border:1px solid #12d7ff25;background:#0c1d35;border-radius:12px;font-size:10px;line-height:1.6;color:#b7c4d9}.light .tip{background:#f1f7ff;color:var(--muted)}
+.main{padding:26px;max-width:1500px;width:100%}.top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:15px}.top h1{font-size:27px;margin:5px 0 0}.top p{color:var(--muted);font-size:12px;margin:7px 0;line-height:1.6}.pill{padding:7px 10px;border-radius:20px;background:#123a2d;color:#45e39f;font-size:10px;white-space:nowrap}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.title{font-size:15px;font-weight:800}.sub,.note{font-size:10px;color:var(--muted);line-height:1.6}.chat{height:470px;overflow:auto;background:var(--input);border:1px solid var(--line);border-radius:12px;padding:13px}.msg{max-width:84%;padding:10px 12px;border-radius:11px;margin:8px 0;font-size:12px;line-height:1.55;white-space:pre-wrap}.bot{background:var(--bot)}.user{background:var(--user);color:#fff;margin-left:auto}.composer{display:flex;gap:8px;margin-top:9px}.composer input{flex:1}.input{width:100%;background:var(--input);border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--text);outline:none}.btn{border:1px solid var(--line);background:#111e37;color:#fff;border-radius:8px;padding:9px 12px;cursor:pointer}.light .btn{background:#edf2f8;color:#152033}.primary{background:var(--blue)!important;border-color:var(--blue);color:#fff!important}.whatsapp{background:var(--green)!important;border-color:var(--green);color:#fff!important}.suggestions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.suggestions button{font-size:10px;padding:7px 9px;border-radius:20px;background:var(--input);color:var(--muted);border:1px solid var(--line);cursor:pointer}.cta{display:grid;gap:8px;margin-top:10px}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--input)}.stat small{color:var(--muted);font-size:9px}.stat strong{display:block;font-size:22px;margin-top:5px}.faq{padding:10px 0;border-bottom:1px solid var(--line);font-size:11px}.faq:last-child{border-bottom:0}.hidden{display:none!important}.notice{padding:12px;border:1px solid #0879ff30;background:#0879ff10;border-radius:10px;font-size:11px;line-height:1.6;color:var(--muted)}.price{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.plan{padding:13px;border:1px solid var(--line);border-radius:11px}.plan b{display:block;font-size:13px}.plan strong{display:block;font-size:18px;margin:5px 0}.plan small{color:var(--muted);font-size:9px}.modal{position:fixed;inset:0;background:#000d;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999}.modal.show{display:flex}.zoom{width:min(330px,72vw);height:min(330px,72vw);border:5px solid var(--cyan);border-radius:50%;background:#10284a;display:grid;place-items:center;box-shadow:0 0 70px #12d7ff44}.zoom img{width:80%;height:80%;object-fit:contain}.closeHint{position:absolute;bottom:35px;color:#fff;font-size:12px}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{border-right:0;border-bottom:1px solid var(--line)}.grid{grid-template-columns:1fr}.main{padding:15px}.price{grid-template-columns:1fr}.nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.nav{grid-template-columns:1fr 1fr}.statgrid{grid-template-columns:1fr 1fr}.top{flex-direction:column}.top h1{font-size:22px}.composer{flex-direction:column}.chat{height:420px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><button class="logo" onclick="openLogo()"><img src="jfs-ai-logo.svg" alt="JFS AI"></button><div><b>JFS AI</b><small>LAUNDRY CUSTOMER SERVICE</small><div class="tag">● DEMO GRATIS</div></div></div>
+  <div class="sideTitle">PRODUK</div>
+  <div class="nav">
+    <button id="navChat" class="active" onclick="page('chatPage',this)">💬 Customer Service</button>
+    <button onclick="page('knowledgePage',this)">📚 Knowledge Base</button>
+    <button onclick="page('subscriptionPage',this)">💳 Subscription</button>
+    <button onclick="page('settingsPage',this)">⚙️ Pengaturan</button>
+  </div>
+  <div class="sideTitle">TAMPILAN</div>
+  <div class="theme"><button onclick="setTheme('dark')">🌙 Gelap</button><button onclick="setTheme('light')">☀️ Terang</button></div>
+  <div class="tip"><b>🎯 Coba sendiri</b><br>Tanyakan harga, layanan, jam buka, lokasi, antar-jemput, atau cara pemesanan.<br><br><span style="color:#45e39f">● Simulasi Laundry aktif</span></div>
+</aside>
+<main class="main">
+  <header class="top"><div><div class="eyebrow">JFS AI LAUNDRY</div><h1>WhatsApp Laundry Anda Bisa Melayani Pelanggan 24 Jam</h1><p>Simulasikan bagaimana AI membantu menjawab pertanyaan pelanggan, menangkap kebutuhan, dan meneruskan percakapan ke admin saat diperlukan.</p></div><span class="pill">● DEMO AKTIF</span></header>
+
+  <section id="chatPage">
+    <div class="grid">
+      <div class="panel">
+        <div class="head"><div><div class="title">💬 Simulasi Chat Pelanggan</div><div class="sub">Contoh: Laundry Bersih Jaya</div></div><button class="btn" onclick="resetChat()">Reset</button></div>
+        <div id="chat" class="chat"></div>
+        <div class="suggestions" id="suggestions"></div>
+        <div class="composer"><input id="message" class="input" placeholder="Contoh: berapa harga cuci kiloan?" onkeydown="if(event.key==='Enter')send()"><button class="btn primary" onclick="send()">Kirim</button></div>
+        <div class="cta"><button class="btn whatsapp" onclick="contactAdmin()">👨‍💼 Hubungi Admin via WhatsApp</button></div>
+      </div>
+      <div>
+        <div class="panel"><div class="title">📊 Ringkasan Demo</div><div class="statgrid" style="margin-top:12px"><div class="stat"><small>Pesan</small><strong id="count">0</strong></div><div class="stat"><small>Terjawab AI</small><strong id="answered">0</strong></div><div class="stat"><small>Perlu Admin</small><strong id="handoff">0</strong></div></div></div>
+        <div class="panel"><div class="title">✨ AI Laundry Bisa Membantu</div><p class="note">Pada produk sebenarnya, jawaban akan menggunakan Knowledge Base milik masing-masing laundry.</p><div style="margin-top:10px"><div class="faq">✓ Harga & layanan laundry</div><div class="faq">✓ Jam buka & lokasi</div><div class="faq">✓ Antar-jemput</div><div class="faq">✓ Cara pemesanan</div><div class="faq">✓ Handoff ke admin manusia</div></div></div>
+        <div class="panel"><div class="title">🚀 Bayangkan di Laundry Anda</div><div class="notice"><b>Tanpa harus membalas pertanyaan yang sama berulang kali.</b><br>AI membantu melayani pelanggan, sementara admin fokus pada operasional dan order.</div><button class="btn whatsapp" style="width:100%;margin-top:10px" onclick="contactAdmin()">Minta Demo untuk Laundry Saya</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="knowledgePage" class="hidden"><div class="panel"><div class="title">📚 Knowledge Base Laundry</div><p class="note">Contoh informasi yang digunakan AI pada demo ini.</p><div style="margin-top:12px"><div class="faq"><b>Harga</b><br>Cuci Kiloan Rp8.000/kg · Express Rp15.000/kg · Bed Cover mulai Rp25.000</div><div class="faq"><b>Jam Operasional</b><br>Senin–Sabtu 08.00–20.00</div><div class="faq"><b>Lokasi</b><br>Jl. Bersih No. 12</div><div class="faq"><b>Antar-Jemput</b><br>Tersedia untuk area layanan yang ditentukan admin.</div><div class="faq"><b>Pemesanan</b><br>Pelanggan menyebutkan jenis cucian dan perkiraan berat; admin mengonfirmasi total.</div></div></div></section>
+
+  <section id="subscriptionPage" class="hidden"><div class="panel"><div class="title">💳 JFS AI Laundry Subscription</div><p class="note">Model awal untuk pilot: langganan per periode dan konfirmasi pembayaran melalui JFS AI.</p><div class="price" style="margin-top:12px"><div class="plan"><b>3 Bulan</b><strong>Rp149.000</strong><small>≈ Rp49.667/bulan</small></div><div class="plan"><b>6 Bulan</b><strong>Rp249.000</strong><small>≈ Rp41.500/bulan</small></div><div class="plan"><b>9 Bulan</b><strong>Rp329.000</strong><small>≈ Rp36.556/bulan</small></div></div><div class="notice" style="margin-top:12px">Harga ini adalah rancangan validasi awal, bukan harga final. Biaya AI, WhatsApp, dan penggunaan nyata akan dihitung sebelum pricing dikunci.</div><button class="btn whatsapp" style="margin-top:10px;width:100%" onclick="contactAdmin('Saya tertarik mencoba JFS AI Laundry untuk bisnis saya.')">Diskusikan Paket Laundry Saya</button></div></section>
+
+  <section id="settingsPage" class="hidden"><div class="panel"><div class="title">⚙️ Pengaturan Demo</div><p class="note">Versi publik ini sengaja dibuat tanpa login agar calon pelanggan dapat langsung mencoba. Pada produk commercial, data laundry akan tersimpan per tenant di Supabase.</p><div class="notice" style="margin-top:12px"><b>Arsitektur target:</b><br>Tenant Laundry → Knowledge Base → AI Customer Service → WhatsApp → Customer/Order → Human Handoff.</div></div></section>
+</main></div>
+<div id="modal" class="modal" onclick="closeLogo()"><div class="zoom" onclick="event.stopPropagation()"><img src="jfs-ai-logo.svg" alt="JFS AI"></div><div class="closeHint">Klik di luar logo atau tekan ESC untuk menutup</div></div>
+<script>
+const WA='6282230010172';
+const kb=[
+ {keys:['harga','harga berapa','tarif','biaya','kilo','kiloan','express','bed cover'],answer:'Berikut contoh harga Laundry Bersih Jaya: Cuci Kiloan Rp8.000/kg, Express Rp15.000/kg, dan Bed Cover mulai Rp25.000.',cat:'Harga'},
+ {keys:['produk','layanan','service','jasa'],answer:'Kami melayani laundry kiloan, express, bed cover, dan antar-jemput.',cat:'Layanan'},
+ {keys:['jam','buka','tutup','operasional','kapan'],answer:'Jam operasional contoh laundry ini: Senin–Sabtu, 08.00–20.00.',cat:'Jam'},
+ {keys:['lokasi','alamat','dimana','di mana','tempat'],answer:'Lokasi contoh: Jl. Bersih No. 12.',cat:'Lokasi'},
+ {keys:['antar','jemput','pick up','pickup'],answer:'Tersedia layanan antar-jemput untuk area layanan yang ditentukan admin.',cat:'Antar-Jemput'},
+ {keys:['pesan','order','pemesanan','cara pesan','booking'],answer:'Silakan sebutkan jenis cucian dan perkiraan berat. Admin akan mengonfirmasi total pesanan.',cat:'Pemesanan'},
+ {keys:['halo','hai','hello'],answer:'Halo! 👋 Saya AI Customer Service untuk Laundry Bersih Jaya. Silakan tanyakan harga, layanan, jam buka, lokasi, antar-jemput, atau cara pesan.',cat:'FAQ'}
+];
+let stats={count:0,answered:0,handoff:0};
+const $=id=>document.getElementById(id);
+function setTheme(t){document.body.classList.toggle('light',t==='light');localStorage.jfs_laundry_theme=t}
+if(localStorage.jfs_laundry_theme==='light')setTheme('light');
+function page(id,btn){['chatPage','knowledgePage','subscriptionPage','settingsPage'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active')}
+function addMsg(text,type){const d=document.createElement('div');d.className='msg '+type;d.textContent=text;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight}
+function match(q){const s=q.toLowerCase();return kb.find(x=>x.keys.some(k=>s.includes(k)))||null}
+function sendText(text){const q=text.trim();if(!q)return;addMsg(q,'user');stats.count++;const hit=match(q);if(hit){addMsg(hit.answer,'bot');stats.answered++}else{addMsg('Maaf, informasi tersebut belum tersedia di Knowledge Base demo. Saya akan menghubungkan Anda dengan admin agar pelanggan tidak menerima jawaban yang belum terverifikasi.','bot');stats.handoff++}renderStats()}
+function send(){const el=$('message');sendText(el.value);el.value='';el.focus()}
+function ask(t){sendText(t)}
+function resetChat(){stats={count:0,answered:0,handoff:0};$('chat').innerHTML='';addMsg('Halo! 👋 Saya AI Customer Service untuk Laundry Bersih Jaya. Silakan bertanya tentang harga, layanan, jam buka, lokasi, antar-jemput, atau cara pesan.','bot');renderStats()}
+function renderStats(){$('count').textContent=stats.count;$('answered').textContent=stats.answered;$('handoff').textContent=stats.handoff}
+function contactAdmin(message){const msg=encodeURIComponent(message||'Halo JFS AI, saya ingin mengetahui lebih lanjut tentang AI Customer Service untuk laundry saya.');window.open('https://wa.me/'+WA+'?text='+msg,'_blank','noopener')}
+function openLogo(){$('modal').classList.add('show')}function closeLogo(){$('modal').classList.remove('show')}document.addEventListener('keydown',e=>e.key==='Escape'&&closeLogo());
+$('suggestions').innerHTML=['Harga laundry','Jam buka','Lokasi','Ada antar-jemput?','Cara pesan'].map(x=>'<button onclick="ask('+JSON.stringify(x)+')">'+x+'</button>').join('');
+resetChat();
+</script>
+</body>
+</html>
