@@ -24,9 +24,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p preview
-          cp -R . preview/site
-          rm -rf preview/site/.git preview/site/preview
+          rm -rf preview
+          mkdir -p preview/site
+          rsync -a --exclude='.git' --exclude='preview/' ./ preview/site/
           printf 'JFS AI PR Preview\nPR: %s\nCommit: %s\n' "${{ github.event.pull_request.number || 'manual' }}" "${GITHUB_SHA}" > preview/README.txt
 
       - name: Upload preview artifact
