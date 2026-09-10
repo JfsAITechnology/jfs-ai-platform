@@ -1,0 +1,60 @@
+name: Inventory Authenticated E2E
+
+on:
+  push:
+    branches:
+      - main
+      - feature/inventory-stock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inventory-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Authenticated multi-tenant Inventory E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global playwright@1.55.0
+          playwright install --with-deps chromium
+
+      - name: Run authenticated Inventory E2E
+        env:
+          E2E_BASE_URL: https://jfsaitechnology.github.io/jfs-ai-platform
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_USER_A_EMAIL: ${{ secrets.E2E_USER_A_EMAIL }}
+          E2E_USER_A_PASSWORD: ${{ secrets.E2E_USER_A_PASSWORD }}
+          E2E_USER_B_EMAIL: ${{ secrets.E2E_USER_B_EMAIL }}
+          E2E_USER_B_PASSWORD: ${{ secrets.E2E_USER_B_PASSWORD }}
+          E2E_TENANT_A_ID: ${{ secrets.E2E_TENANT_A_ID }}
+          E2E_PRODUCT_A_ID: ${{ secrets.E2E_PRODUCT_A_ID }}
+          E2E_TENANT_B_ID: ${{ secrets.E2E_TENANT_B_ID }}
+          E2E_PRODUCT_B_ID: ${{ secrets.E2E_PRODUCT_B_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in E2E_SUPABASE_URL E2E_SUPABASE_ANON_KEY E2E_USER_A_EMAIL E2E_USER_A_PASSWORD E2E_USER_B_EMAIL E2E_USER_B_PASSWORD E2E_TENANT_A_ID E2E_PRODUCT_A_ID E2E_TENANT_B_ID E2E_PRODUCT_B_ID; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required repository secret: $name"
+              exit 1
+            fi
+          done
+          NODE_PATH="$(npm root -g)" node e2e/inventory.spec.js
