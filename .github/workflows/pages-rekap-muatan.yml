@@ -37,7 +37,7 @@ jobs:
           rm -rf _site
           mkdir -p _site/assets
           cp -R laporan-rekap-muatan/. _site/
-          cp laporan-rekap-muatan/assets/jfs-ai-robot.png _site/assets/jfs-ai-robot.png
+          cp laporan-rekap-muatan/assets/jfs-ai-robot.webp _site/assets/jfs-ai-robot.png
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
