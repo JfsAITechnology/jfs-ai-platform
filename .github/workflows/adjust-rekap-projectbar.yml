@@ -1,0 +1,34 @@
+name: Adjust Rekap Project Bar
+on:
+  push:
+    paths:
+      - '.github/workflows/adjust-rekap-projectbar.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Adjust project bar layout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('laporan-rekap-muatan/index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('.projectbar .add{flex:1}', '.projectbar .add{flex:0 1 430px}')
+          old = '<div class="projectbar"><img src="../mas-firman-pratama/assets/brand/jfs-ai-logo.jpg" onerror="this.style.display=\'none\'"><div class="add"><b>Tambah Project / Vendor</b><div class="form" style="margin-top:7px"><input id="newProject" placeholder="Nama PT/Vendor" style="flex:1;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px"><button class="primary" onclick="addProject()">+ Project</button></div></div></div>'
+          new = '<div class="projectbar"><div class="add"><b>Tambah Project / Vendor</b><div class="form" style="margin-top:7px"><input id="newProject" placeholder="Nama PT/Vendor" style="flex:1;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px"><button class="primary" onclick="addProject()">+ Project</button></div></div><img src="../mas-firman-pratama/assets/brand/jfs-ai-logo.jpg" onerror="this.style.display=\'none\'"></div>'
+          if old not in s:
+              raise SystemExit('Expected project bar markup was not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit and remove helper workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add laporan-rekap-muatan/index.html
+          git rm .github/workflows/adjust-rekap-projectbar.yml
+          git commit -m 'Refine project vendor input width and logo placement'
+          git push
