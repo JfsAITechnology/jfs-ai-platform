@@ -37,6 +37,9 @@ jobs:
           rm -rf _site
           mkdir -p _site/assets
           cp -R laporan-rekap-muatan/. _site/
+          cp promo/jfs-logo.png _site/assets/candidate-promo.png
+          cp mas-firman-pratama/logo.jpg _site/assets/candidate-logo.jpg
+          cp mas-firman-pratama/assets/brand/jfs-ai-logo.jpg _site/assets/candidate-brand.jpg
           cp promo/jfs-logo.png _site/assets/jfs-ai-robot.png
 
       - name: Upload Pages artifact
