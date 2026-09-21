@@ -30,10 +30,17 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare Pages site
+        run: |
+          rm -rf _site
+          mkdir -p _site/assets
+          cp -R laporan-rekap-muatan/. _site/
+          cp mas-firman-pratama/assets/brand/jfs-ai-logo.jpg _site/assets/jfs-ai-logo.jpg
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./laporan-rekap-muatan
+          path: ./_site
 
       - name: Deploy to GitHub Pages
         id: deployment
