@@ -5,8 +5,6 @@ on:
     branches: [main]
     paths:
       - 'laporan-rekap-muatan/**'
-      - 'promo/jfs-logo.png'
-      - 'laporan-rekap-muatan/**'
       - '.github/workflows/pages-rekap-muatan.yml'
   workflow_dispatch:
 
@@ -37,10 +35,7 @@ jobs:
           rm -rf _site
           mkdir -p _site/assets
           cp -R laporan-rekap-muatan/. _site/
-          cp promo/jfs-logo.png _site/assets/candidate-promo.png
-          cp mas-firman-pratama/logo.jpg _site/assets/candidate-logo.jpg
-          cp mas-firman-pratama/assets/brand/jfs-ai-logo.jpg _site/assets/candidate-brand.jpg
-          cp promo/jfs-logo.png _site/assets/jfs-ai-robot.png
+          cp laporan-rekap-muatan/assets/jfs-ai-robot.png _site/assets/jfs-ai-robot.png
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
