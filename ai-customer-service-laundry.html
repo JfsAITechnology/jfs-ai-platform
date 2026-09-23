@@ -12,7 +12,31 @@ button,input{font:inherit}.app{min-height:100vh;display:grid;grid-template-colum
 .main{padding:26px;max-width:1500px;width:100%}.top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:15px}.eyebrow{font-size:10px;color:var(--cyan);letter-spacing:.08em;font-weight:800}.top h1{font-size:27px;margin:5px 0 0;line-height:1.18}.top p{color:var(--muted);font-size:12px;margin:7px 0;line-height:1.6;max-width:900px}.pill{padding:7px 10px;border-radius:20px;background:#123a2d;color:#45e39f;font-size:10px;white-space:nowrap}.pill.ai{background:#12304d;color:#8fddff}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.title{font-size:15px;font-weight:800}.sub,.note{font-size:10px;color:var(--muted);line-height:1.6}.chat{height:470px;overflow:auto;background:var(--input);border:1px solid var(--line);border-radius:12px;padding:13px}.msg{max-width:84%;padding:10px 12px;border-radius:11px;margin:8px 0;font-size:12px;line-height:1.55;white-space:pre-wrap}.bot{background:var(--bot)}.user{background:var(--user);color:#fff;margin-left:auto}.composer{display:flex;gap:8px;margin-top:9px}.composer input{flex:1}.input{width:100%;background:var(--input);border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--text);outline:none}.input:focus{border-color:#0879ff80}.btn{border:1px solid var(--line);background:#111e37;color:#fff;border-radius:8px;padding:9px 12px;cursor:pointer}.light .btn{background:#edf2f8;color:#152033}.primary{background:var(--blue)!important;border-color:var(--blue);color:#fff!important}.whatsapp{background:var(--green)!important;border-color:var(--green);color:#fff!important}.btn:disabled{opacity:.6;cursor:not-allowed}.suggestions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.suggestions button{font-size:10px;padding:7px 9px;border-radius:20px;background:var(--input);color:var(--muted);border:1px solid var(--line);cursor:pointer}.cta{display:grid;gap:8px;margin-top:10px}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--input)}.stat small{color:var(--muted);font-size:9px}.stat strong{display:block;font-size:22px;margin-top:5px}.faq{padding:10px 0;border-bottom:1px solid var(--line);font-size:11px}.faq:last-child{border-bottom:0}.hidden{display:none!important}.notice{padding:12px;border:1px solid #0879ff30;background:#0879ff10;border-radius:10px;font-size:11px;line-height:1.6;color:var(--muted)}.statusline{margin-top:8px;font-size:10px;color:var(--muted)}.statusline.ok{color:#45e39f}.statusline.err{color:var(--danger)}.price{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.plan{padding:13px;border:1px solid var(--line);border-radius:11px}.plan b{display:block;font-size:13px}.plan strong{display:block;font-size:18px;margin:5px 0}.plan small{color:var(--muted);font-size:9px}.source{font-size:9px;color:var(--muted);margin-top:8px}.modal{position:fixed;inset:0;background:#000d;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999}.modal.show{display:flex}.zoom{width:min(330px,72vw);height:min(330px,72vw);border:5px solid var(--cyan);border-radius:50%;background:#10284a;display:grid;place-items:center;box-shadow:0 0 70px #12d7ff44}.zoom img{width:80%;height:80%;object-fit:contain}.closeHint{position:absolute;bottom:35px;color:#fff;font-size:12px}
 @media(max-width:900px){.app{grid-template-columns:1fr}.side{border-right:0;border-bottom:1px solid var(--line)}.grid{grid-template-columns:1fr}.main{padding:15px}.price{grid-template-columns:1fr}.nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.nav{grid-template-columns:1fr 1fr}.statgrid{grid-template-columns:1fr 1fr}.top{flex-direction:column}.top h1{font-size:22px}.composer{flex-direction:column}.chat{height:420px}}
 </style>
-</head>
+<style id="jfs-premium-laundry-theme">
+:root{--bg:#0D1117;--panel:#151A22;--input:#0F141B;--text:#F8FAFC;--muted:#94A3B8;--line:#273142;--blue:#2563EB;--purple:#7C3AED;--cyan:#12D7FF}
+body{font-family:Inter,"Plus Jakarta Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 70% 0%,#27205A20,transparent 35%),var(--bg)}
+.side{background:linear-gradient(180deg,#17112B 0%,#101827 52%,#0D1117 100%);border-color:#334155;box-shadow:8px 0 30px #00000035}
+.logo{background:linear-gradient(135deg,#241044,#12336A);border-color:#6D5DFB;box-shadow:0 0 24px #6D5DFB30}
+.nav button.active,.nav button:hover,.theme button:hover{background:linear-gradient(90deg,#7C3AED26,#2563EB26);border-color:#6D5DFB45;box-shadow:inset 3px 0 #7C3AED;color:#fff}
+.panel{background:linear-gradient(145deg,#171C25,#11161D);border-color:#273142;box-shadow:0 8px 28px #00000020}
+.chat{background:#0F141B;border-color:#334155}
+.stat{background:#11161D;border-color:#273142}
+.stat strong{color:var(--cyan)}
+.input{background:#0F141B;border-color:#334155;color:#F8FAFC}
+.input:focus{border-color:#6366F1;box-shadow:0 0 0 3px #6366F11A}
+.btn.primary{background:linear-gradient(135deg,#7C3AED,#2563EB)!important;border-color:#7C3AED;box-shadow:0 6px 18px #2563EB30}
+.suggestions button{background:#11161D;border-color:#334155;color:#AAB7CC}
+.suggestions button:hover{border-color:#6366F1;color:#fff}
+.pill.ai{background:linear-gradient(90deg,#7C3AED30,#2563EB30);color:#8FEAFF;border:1px solid #6366F140}
+.notice{background:linear-gradient(90deg,#7C3AED10,#2563EB10);border-color:#6366F130}
+.light{background:#F5F7FB;color:#172033}
+.light .side{background:linear-gradient(180deg,#F8F7FF,#EEF4FF);border-color:#D8DCE8}
+.light .panel{background:linear-gradient(145deg,#fff,#F8FAFD);border-color:#DCE2EC}
+.light .chat,.light .stat,.light .input{background:#F8FAFC;color:#172033;border-color:#D7DEE9}
+.light .btn{background:#fff;color:#172033;border-color:#D7DEE9}
+.light .suggestions button{background:#fff;color:#526078;border-color:#D7DEE9}
+.light .nav button.active,.light .nav button:hover{color:#172033;background:linear-gradient(90deg,#7C3AED12,#2563EB12)}
+</style></head>
 <body>
 <div class="app">
 <aside class="side">
