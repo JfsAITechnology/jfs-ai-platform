@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JFS AI Technology — Pilih Layanan</title>
+<style>
+:root{--bg:#0D1117;--card:#151A22;--card2:#11161D;--border:#273142;--purple:#7C3AED;--blue:#2563EB;--cyan:#12D7FF;--text:#F8FAFC;--muted:#94A3B8;--green:#39E58C}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#30206a55,transparent 38%),var(--bg);color:var(--text);font-family:Inter,"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{width:min(1120px,92%);margin:auto}.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0}.brand{display:flex;align-items:center;gap:12px}.brand img{width:48px;height:48px;object-fit:contain}.brand strong{display:block;font-size:17px}.brand small{color:var(--muted);font-size:10px}.login{color:#cbd5e1;text-decoration:none;border:1px solid var(--border);padding:9px 14px;border-radius:9px;font-size:12px}.hero{text-align:center;padding:64px 0 36px}.eyebrow{display:inline-block;color:var(--cyan);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}.hero h1{font-size:clamp(32px,6vw,58px);line-height:1.02;margin:0 auto 16px;max-width:780px}.hero h1 span{background:linear-gradient(90deg,#a78bfa,#38bdf8);-webkit-background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:650px;margin:auto;line-height:1.7;font-size:14px}.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:26px 0 70px}.app{background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:18px;padding:24px;display:flex;flex-direction:column;min-height:350px;box-shadow:0 12px 35px #0004}.app:hover{transform:translateY(-3px);border-color:#6366f1;transition:.18s}.icon{width:58px;height:58px;border-radius:15px;display:grid;place-items:center;font-size:29px;background:linear-gradient(135deg,#7c3aed33,#2563eb33);border:1px solid #6366f155}.app h2{font-size:20px;margin:18px 0 7px}.app .tag{color:var(--green);font-size:10px;font-weight:700;letter-spacing:.5px}.app p{color:var(--muted);font-size:12px;line-height:1.65;min-height:62px}.features{padding:8px 0 18px;margin:0;list-style:none;color:#cbd5e1;font-size:11px;line-height:2}.features li:before{content:"✓";color:var(--green);margin-right:8px}.cta{margin-top:auto;display:flex;gap:8px}.btn{flex:1;text-align:center;text-decoration:none;padding:11px;border-radius:9px;font-size:12px;font-weight:700}.primary{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff}.secondary{border:1px solid var(--border);color:#cbd5e1}.note{text-align:center;border:1px solid #ffffff10;background:#111827aa;border-radius:14px;padding:18px;color:var(--muted);font-size:11px;line-height:1.6;margin-bottom:45px}.note b{color:#fff}.footer{text-align:center;color:#64748b;font-size:10px;padding:20px 0 35px;border-top:1px solid #ffffff0d}@media(max-width:800px){.apps{grid-template-columns:1fr}.hero{padding-top:40px}.app{min-height:0}.top{padding:16px 0}.brand strong{font-size:14px}}
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="./customer.html" style="text-decoration:none;color:inherit">
+    <img src="jfs-ai-logo.svg" alt="JFS AI Technology">
+    <div><strong>JFS AI Technology</strong><small>AI Solutions for Indonesian UMKM</small></div>
+  </a>
+  <a class="login" href="./index.html">Login Admin</a>
+</header>
+<main class="wrap">
+<section class="hero">
+  <div class="eyebrow">JFS AI Customer Portal</div>
+  <h1>Pilih aplikasi yang sesuai <span>dengan kebutuhan bisnis Anda.</span></h1>
+  <p>Satu tempat untuk memilih solusi JFS AI. Mulai dari pengelolaan muatan, keuangan usaha, sampai otomatisasi bisnis laundry.</p>
+</section>
+<section class="apps">
+<article class="app">
+  <div class="icon">🚚</div><div class="tag">OPERASIONAL</div><h2>Rekap Muatan</h2>
+  <p>Pencatatan rekap muatan kendaraan logistik dan uang saku driver secara online, mobile-friendly, dengan output PDF dan Excel.</p>
+  <ul class="features"><li>Catatan muatan harian</li><li>Uang saku driver</li><li>Export PDF & Excel</li></ul>
+  <div class="cta"><a class="btn primary" href="./laporan-rekap-muatan/index.html">Mulai</a><a class="btn secondary" href="./laporan-rekap-muatan/index.html">Lihat</a></div>
+</article>
+<article class="app">
+  <div class="icon">💰</div><div class="tag">KEUANGAN UMKM</div><h2>Keuangan Pintar AI</h2>
+  <p>Membantu UMKM mencatat pemasukan dan pengeluaran, membaca bukti transaksi, serta mendapatkan insight keuangan berbasis AI.</p>
+  <ul class="features"><li>Pemasukan & pengeluaran</li><li>Scan bukti transaksi</li><li>Analisis & laporan</li></ul>
+  <div class="cta"><a class="btn primary" href="https://jfsaitechnology.github.io/keuangan-pintar/">Mulai</a><a class="btn secondary" href="https://jfsaitechnology.github.io/keuangan-pintar/">Lihat</a></div>
+</article>
+<article class="app">
+  <div class="icon">🧺</div><div class="tag">LAUNDRY SaaS</div><h2>JFS Laundry AI</h2>
+  <p>Sistem laundry berbasis AI dengan customer service, order tracking, pickup/delivery, dan pengelolaan tenant.</p>
+  <ul class="features"><li>Customer & admin</li><li>Order & tracking</li><li>AI customer service</li></ul>
+  <div class="cta"><a class="btn primary" href="https://jfsaitechnology.github.io/jfs-laundry-ai/">Mulai</a><a class="btn secondary" href="https://jfsaitechnology.github.io/jfs-laundry-ai/">Lihat</a></div>
+</article>
+</section>
+<div class="note"><b>Butuh bantuan memilih?</b><br>Hubungi JFS AI Technology. Kami dapat membantu menentukan aplikasi berdasarkan kebutuhan bisnis Anda.</div>
+</main>
+<footer class="footer">© 2026 JFS AI Technology · AI Automation for Indonesian UMKM</footer>
+</body>
+</html>
