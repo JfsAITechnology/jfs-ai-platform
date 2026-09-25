@@ -1,0 +1,19 @@
+name: Customer Portal E2E
+on:
+  push:
+    paths:
+      - 'customer.html'
+      - 'tests/customer-portal.spec.mjs'
+      - '.github/workflows/customer-portal-e2e.yml'
+  workflow_dispatch:
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm init -y
+      - run: npm install -D @playwright/test
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/customer-portal.spec.mjs
