@@ -22,7 +22,7 @@ test('all service CTA destinations are present', async ({ page }) => {
   expect(hrefs.some(x=>x.includes('keuangan-pintar'))).toBeTruthy();
   expect(hrefs.some(x=>x.includes('jfs-laundry-ai'))).toBeTruthy();
   expect(hrefs.some(x=>x.includes('rekap-login.html'))).toBeTruthy();
-  expect(hrefs.some(x=>x.includes('ARANE-Elektronik'))).toBeTruthy();
+  expect(hrefs.some(x=>x.includes('ARANE-Elektronik/index.html'))).toBeTruthy();
 });
 
 test('JFS AI CS chat is available and founder escalation UI exists', async ({ page }) => {
