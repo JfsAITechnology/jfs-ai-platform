@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customer Dashboard — JFS AI Technology</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--text:#111827;--muted:#667085;--line:#e7eaf0;--blue:#2563eb;--violet:#7c3aed;--green:#16a34a;--shadow:0 10px 35px #0f172a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}.app{min-height:100vh;display:flex}.sidebar{width:250px;min-height:100vh;background:#0d1117;color:#fff;padding:22px 16px;position:fixed;left:0;top:0;bottom:0}.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 26px}.brand img{width:42px;height:42px;object-fit:contain}.brand b{font-size:16px}.brand small{display:block;color:#9ca3af;font-size:10px;margin-top:3px}.title{color:#6b7280;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:12px}.nav{display:flex;flex-direction:column;gap:5px}.nav a{display:flex;gap:12px;align-items:center;padding:11px 12px;border-radius:11px;color:#cbd5e1;text-decoration:none;font-size:13px}.nav a:hover,.nav a.active{background:linear-gradient(135deg,#2563eb,#6d28d9);color:#fff}.user{position:absolute;left:16px;right:16px;bottom:20px;background:#151b24;border:1px solid #252d38;border-radius:13px;padding:10px;display:flex;gap:10px;align-items:center}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2563eb,#7c3aed);font-size:12px;font-weight:700}.user small{display:block;color:#9ca3af;font-size:9px}.main{margin-left:250px;width:calc(100% - 250px);min-height:100vh}.topbar{height:72px;background:#ffffffeb;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:5}.topbar b{font-size:18px}.topbar small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.actions button{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:11px;cursor:pointer}.content{padding:30px 32px 90px;max-width:1450px;margin:auto}.welcome{min-height:205px;padding:30px 34px;border-radius:24px;position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 85% 20%,#7c3aed4d,transparent 35%),linear-gradient(135deg,#111827,#172554 55%,#312e81)}.welcome>div{position:relative;z-index:2;max-width:65%}.welcome label{font-size:12px;color:#bfdbfe;font-weight:700}.welcome h1{font-size:28px;line-height:1.2;margin:8px 0}.welcome p{font-size:13px;line-height:1.7;color:#dbeafe}.welcome button{border:0;background:#fff;color:#1d4ed8;border-radius:10px;padding:10px 16px;font-weight:700;font-size:12px;cursor:pointer}.welcome img{position:absolute;right:35px;bottom:-12px;width:185px;height:auto}.section-title{font-size:17px;font-weight:800;margin:28px 0 14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.stat,.card,.quick,.app{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.stat{padding:19px}.stat-icon{font-size:20px}.stat strong{display:block;font-size:24px;margin-top:12px}.stat small{color:var(--muted);font-size:11px}.grid{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-top:18px}.card{padding:21px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.head b{font-size:14px}.head a{font-size:10px;color:var(--blue);font-weight:700}.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.app{padding:15px;box-shadow:none;cursor:pointer;transition:.2s}.app:hover{transform:translateY(-3px)}.app-icon{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;font-size:21px;margin-bottom:12px}.laundry{background:#dbeafe}.money{background:#dcfce7}.cargo{background:#fef3c7}.app b{font-size:13px}.app p{color:var(--muted);font-size:10px;line-height:1.5;min-height:30px}.app button{width:100%;border:0;background:#f1f5f9;border-radius:8px;padding:8px;font-size:10px;font-weight:700;cursor:pointer}.ai{text-align:center;background:linear-gradient(145deg,#f8fbff,#fff)}.ai img{width:90px;height:108px;object-fit:contain;display:block;margin:0 auto 4px}.ai h3{font-size:16px;margin:5px}.ai p{color:var(--muted);font-size:11px;line-height:1.6}.input{display:flex;gap:7px;border:1px solid var(--line);border-radius:11px;padding:5px;background:#fff}.input input{flex:1;border:0;outline:0;padding:8px;font-size:10px}.input button{border:0;background:#2563eb;color:#fff;border-radius:8px;width:34px}.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.quick{padding:15px;box-shadow:none;cursor:pointer}.quick b{display:block;font-size:11px}.quick small{color:var(--muted);font-size:9px}.activity{display:grid;gap:15px}.activity div{display:flex;align-items:center;gap:12px}.activity-icon{width:35px;height:35px;border-radius:10px;background:#f1f5f9;display:grid;place-items:center}.activity-main{flex:1}.activity-main b{font-size:11px}.activity-main small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.status{font-size:9px;color:var(--green);font-weight:700}footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}footer img{width:60px;height:60px;object-fit:contain;display:block;margin:0 auto 7px}.chat{position:fixed;right:25px;bottom:25px;width:68px;height:68px;border:0;border-radius:50%;background:#fff;box-shadow:0 12px 35px #0f172a2e;cursor:pointer;z-index:20}.chat-button img{width:100%;height:100%;object-fit:contain;padding:9px;border-radius:50%;display:block}.chat-label{position:absolute;right:74px;top:24px;white-space:nowrap;background:#111827;color:#fff;padding:8px 11px;border-radius:8px;font-size:10px;opacity:0;pointer-events:none}.chat:hover .chat-label{opacity:1}body.dark{--bg:#0b0f14;--surface:#111820;--text:#f3f4f6;--muted:#9ca3af;--line:#26303b}body.dark .topbar{background:#111820eb}body.dark .actions button,body.dark .input{background:#151c24;color:#fff}body.dark .app button{background:#1a2430;color:#dbeafe}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.quick-actions{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.sidebar{width:70px;padding:15px 9px}.brand{justify-content:center}.brand b,.brand small,.title,.nav a span:not(.ico),.user div:last-child{display:none}.nav a{justify-content:center}.user{justify-content:center}.main{margin-left:70px;width:calc(100% - 70px)}.topbar{padding:0 16px}.content{padding:20px 15px 90px}.welcome{min-height:255px;padding:25px}.welcome>div{max-width:100%}.welcome img{width:125px;right:15px;opacity:.28}.apps{grid-template-columns:1fr}}@media(max-width:480px){.stats{grid-template-columns:1fr}.quick-actions{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand"><img src="jfs-ai-logo.svg" alt="JFS AI"><div><b>JFS AI</b><small>Technology Platform</small></div></div>
+<div class="title">Menu</div>
+<nav class="nav">
+<a class="active" href="#"><span class="ico">⌂</span><span>Dashboard</span></a>
+<a href="#apps"><span class="ico">▣</span><span>Aplikasi Saya</span></a>
+<a href="#ai"><span class="ico">◉</span><span>AI Assistant</span></a>
+<a href="#"><span class="ico">♢</span><span>Subscription</span></a>
+<a href="#activity"><span class="ico">◌</span><span>Aktivitas</span></a>
+<div class="title">Account</div>
+<a href="#"><span class="ico">⚙</span><span>Pengaturan</span></a>
+<a href="#"><span class="ico">?</span><span>Bantuan</span></a>
+</nav>
+<div class="user"><div class="avatar">JO</div><div><b style="font-size:12px">Joe</b><small>Customer JFS AI</small></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><b>Customer Dashboard</b><small>JFS AI Technology Platform</small></div><div class="actions"><button id="theme">◐</button> <button>🔔</button></div></header>
+<section class="content">
+<section class="welcome"><div><label>JFS AI TECHNOLOGY</label><h1>Halo, Joe 👋</h1><p>Kelola bisnis Anda dengan berbagai solusi AI dari JFS AI Technology dalam satu platform.</p><button onclick="document.getElementById('apps').scrollIntoView({behavior:'smooth'})">🚀 Lihat Aplikasi Saya</button></div><img src="jfs-ai-robot-small.webp" alt="JFS AI Robot"></section>
+<div class="section-title">Ringkasan</div>
+<section class="stats">
+<div class="stat"><div class="stat-icon">▣</div><strong>3</strong><small>Aplikasi tersedia</small></div>
+<div class="stat"><div class="stat-icon">◷</div><strong>Trial</strong><small>Status subscription · 30 hari</small></div>
+<div class="stat"><div class="stat-icon">✓</div><strong>100%</strong><small>Akses platform</small></div>
+<div class="stat"><div class="stat-icon">◉</div><strong>24/7</strong><small>AI Assistant</small></div>
+</section>
+<div class="grid">
+<div class="card" id="apps"><div class="head"><b>Aplikasi JFS AI</b><a href="#">Lihat semua →</a></div><div class="apps">
+<div class="app" onclick="openApp('JFS Laundry AI')"><div class="app-icon laundry">🧺</div><b>JFS Laundry AI</b><p>Kelola order, pelanggan, pickup, tracking dan operasional laundry.</p><button>Buka Aplikasi →</button></div>
+<div class="app" onclick="openApp('Keuangan Pintar')"><div class="app-icon money">💰</div><b>Keuangan Pintar</b><p>Catat pemasukan dan pengeluaran bisnis dengan bantuan AI.</p><button>Buka Aplikasi →</button></div>
+<div class="app" onclick="openApp('Rekap Muatan')"><div class="app-icon cargo">🚚</div><b>Rekap Muatan</b><p>Kelola dan rekap data muatan secara cepat dan terstruktur.</p><button>Buka Aplikasi →</button></div>
+</div></div>
+<div class="card ai" id="ai"><img src="jfs-ai-robot-small.webp" alt="JFS AI Assistant"><h3>Butuh bantuan?</h3><p>Ceritakan kebutuhan bisnis Anda. JFS AI akan membantu menemukan solusi yang sesuai.</p><div class="input"><input id="aiInput" placeholder="Contoh: saya ingin mengelola laundry..."><button onclick="askAI()">➜</button></div></div>
+</div>
+<div class="section-title">Aksi Cepat</div>
+<section class="quick-actions"><div class="quick"><div>🤖</div><b>Tanya AI</b><small>Konsultasikan kebutuhan bisnis</small></div><div class="quick"><div>▣</div><b>Aplikasi Saya</b><small>Kelola aplikasi aktif</small></div><div class="quick"><div>💳</div><b>Subscription</b><small>Lihat paket dan masa aktif</small></div><div class="quick"><div>💬</div><b>Hubungi JFS AI</b><small>Konsultasi langsung</small></div></section>
+<div class="section-title" id="activity">Aktivitas Terbaru</div>
+<div class="card"><div class="activity"><div><div class="activity-icon">🧺</div><div class="activity-main"><b>Membuka JFS Laundry AI</b><small>Hari ini · 10:42</small></div><span class="status">Berhasil</span></div><div><div class="activity-icon">💰</div><div class="activity-main"><b>Membuka Keuangan Pintar</b><small>Kemarin · 15:20</small></div><span class="status">Berhasil</span></div><div><div class="activity-icon">🤖</div><div class="activity-main"><b>Konsultasi dengan JFS AI</b><small>Kemarin · 11:08</small></div><span class="status">Selesai</span></div></div></div>
+<footer><img src="jfs-ai-robot-small.webp" alt="JFS AI"><div>Powered by JFS AI Technology</div><div style="margin-top:4px;font-size:10px">© 2026 JFS AI Technology</div></footer>
+</section>
+</main></div>
+<button class="chat" onclick="openChat()"><span class="chat-label">Chat dengan JFS AI</span><img src="jfs-ai-robot-small.webp" alt=""></button>
+<script>
+document.getElementById("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("jfs-theme",document.body.classList.contains("dark")?"dark":"light")};
+if(localStorage.getItem("jfs-theme")==="dark")document.body.classList.add("dark");
+function openApp(name){alert("Membuka "+name+"...\n\nVersi production akan diarahkan melalui JFS AI Platform.")}
+function askAI(){const i=document.getElementById("aiInput");if(!i.value.trim())return i.focus();alert("JFS AI menerima:\n\n"+i.value.trim()+"\n\nVersi production akan diteruskan ke JFS AI Customer Service.");i.value=""}
+function openChat(){alert("JFS AI Customer Service\n\nHalo! Ceritakan kebutuhan bisnis Anda.")}
+</script>
+</body></html>
