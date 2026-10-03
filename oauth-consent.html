@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JFS AI — Authorize</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{margin:0;background:#0d1117;color:#fff;font-family:Arial,sans-serif;min-height:100vh;display:grid;place-items:center}.card{width:min(520px,calc(100% - 32px));background:#151a22;border:1px solid #334155;border-radius:18px;padding:28px;box-sizing:border-box}.muted{color:#94a3b8;line-height:1.6}.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer}.approve{background:#2563eb;color:#fff}.deny{background:#334155;color:#fff;margin-left:8px}</style></head>
+<body><main class="card"><div id="app"><h1>JFS AI Authorization</h1><p class="muted">Checking your JFS AI session…</p></div></main>
+<script>
+const SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co';
+const SUPABASE_KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD';
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'jfs-rekap-auth'}});
+const id=new URLSearchParams(location.search).get('authorization_id');
+const app=document.getElementById('app');
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+async function run(){
+ if(!id){app.innerHTML='<h1>Invalid request</h1><p class="muted">Missing authorization request.</p>';return}
+ const {data:{session}}=await supabase.auth.getSession();
+ if(!session){location.href='index.html?oauth_authorization_id='+encodeURIComponent(id);return}
+ const {data,error}=await supabase.auth.oauth.getAuthorizationDetails(id);
+ if(error||!data){app.innerHTML='<h1>Authorization failed</h1><p class="muted">'+esc(error?.message||'Invalid authorization request.')+'</p>';return}
+ if(!('authorization_id' in data)){location.href=data.redirect_url;return}
+ const client=data.client||{};
+ app.innerHTML='<h1>Authorize JFS AI</h1><p class="muted"><strong>'+esc(client.name||'JFS Laundry AI')+'</strong> is requesting access to your JFS AI account.</p><p class="muted">Signed in as <strong>'+esc(session.user.email||session.user.id)+'</strong>.</p><p class="muted">Requested permissions: '+esc(data.scope||'openid email profile')+'</p><div><button class="btn approve" id="approve">Continue</button><button class="btn deny" id="deny">Cancel</button></div>';
+ document.getElementById('approve').onclick=()=>decision(true);document.getElementById('deny').onclick=()=>decision(false);
+}
+async function decision(ok){
+ const r=ok?await supabase.auth.oauth.approveAuthorization(id):await supabase.auth.oauth.denyAuthorization(id);
+ if(r.error){app.innerHTML='<h1>Authorization failed</h1><p class="muted">'+esc(r.error.message)+'</p>';return}
+ location.href=r.data.redirect_url;
+}
+run();
+</script></body></html>
