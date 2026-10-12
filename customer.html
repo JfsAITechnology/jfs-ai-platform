@@ -54,7 +54,7 @@ const CHAT_API="https://evtkeyfjgqwarsmlzrkh.supabase.co/functions/v1/jfs-ai-cus
 const chatLaunch=document.getElementById("chatLaunch"),chatPanel=document.getElementById("chatPanel"),chatClose=document.getElementById("chatClose"),chatBody=document.getElementById("chatBody"),chatForm=document.getElementById("chatForm"),chatInput=document.getElementById("chatInput"),founderBox=document.getElementById("founderBox"),founderBtn=document.getElementById("founderBtn");
 let chatHistory=[];
 function addMsg(role,text){const d=document.createElement("div");d.className="msg "+role;d.textContent=text;chatBody.insertBefore(d,chatBody.querySelector(".quick")||chatBody.lastElementChild);chatBody.scrollTop=chatBody.scrollHeight;}
-function founderLink(){const last=chatHistory.filter(x=>x.role==="user").slice(-1)[0]?.content||"customer ingin konsultasi solusi AI";return "https://wa.me/?text="+encodeURIComponent("Halo Founder JFS AI, saya ingin konsultasi solusi AI untuk bisnis saya.\n\nKebutuhan saya:\n"+last);}
+function founderLink(){const last=chatHistory.filter(x=>x.role==="user").slice(-1)[0]?.content||"customer ingin konsultasi solusi AI";return "https://wa.me/6282230010172?text="+encodeURIComponent("Halo Founder JFS AI, saya ingin konsultasi solusi AI untuk bisnis saya.\n\nKebutuhan saya:\n"+last);}
 async function sendChat(message){
   addMsg("user",message);chatHistory.push({role:"user",content:message});
   const loading=document.createElement("div");loading.className="msg ai";loading.textContent="CS AI sedang memahami kebutuhan Anda…";chatBody.appendChild(loading);chatBody.scrollTop=chatBody.scrollHeight;
