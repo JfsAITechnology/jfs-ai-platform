@@ -30,7 +30,7 @@ test('JFS AI CS chat is available and founder escalation UI exists', async ({ pa
   await expect(page.locator('#chatLaunch')).toBeVisible();
   await page.locator('#chatLaunch').click();
   await expect(page.locator('#chatPanel')).toHaveClass(/open/);
-  await expect(page.getByText('CS AI JFS AI')).toBeVisible();
+  await expect(page.getByText('CS AI JFS AI', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', {name:'Produk ready'})).toBeVisible();
   await expect(page.getByRole('button', {name:'Cari solusi'})).toBeVisible();
   await expect(page.getByRole('button', {name:'Founder'})).toBeVisible();
