@@ -27,7 +27,7 @@ Deno.serve(async (req: Request) => {
   if (!serverKey) return reply({ error: "MIDTRANS_SERVER_KEY belum diatur pada Supabase Edge Function secrets." }, 503);
 
   try {
-    const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\\s+/i, "");
+    const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
     if (!token) return reply({ error: "Login diperlukan sebelum checkout." }, 401);
     const { data: authData, error: authError } = await db.auth.getUser(token);
     if (authError || !authData.user) return reply({ error: "Sesi login tidak valid." }, 401);
