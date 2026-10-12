@@ -2,48 +2,53 @@
 
 Target repository: https://github.com/JfsAITechnology/jfs-ai-platform  
 Production frontend: https://jfsaitechnology.github.io/jfs-ai-platform/checkout.html  
+Payment result: https://jfsaitechnology.github.io/jfs-ai-platform/payment-result.html  
 Supabase project: `evtkeyfjgqwarsmlzrkh`
 
-## What is implemented
+## Implemented
 
-- `checkout.html`: requires an existing JFS AI Supabase login, loads active paid plans from `jfs_app_subscription_plans`, and requests an order from the server. The browser does not decide the amount.
-- `payment-result.html`: shows the current order state to the logged-in owner of that order.
-- Supabase Edge Function `midtrans-create-checkout`: validates the user session and active plan, records an order, and requests a Midtrans Snap transaction.
-- Supabase Edge Function `midtrans-notification`: calls Midtrans Get Status API to verify the order and amount, then records a paid subscription only for `settlement` or accepted `capture`. A unique `midtrans_order_id` prevents duplicate subscription activation.
-- Database table `jfs_midtrans_payment_orders`: stores order and payment state with RLS restricting reads to the order owner.
-- Customer landing header links to `Paket & Pembayaran`.
+- `checkout.html` requires an existing JFS AI Supabase login and loads active paid packages from `jfs_app_subscription_plans`. The backend validates the selected package and amount.
+- `midtrans-create-checkout` validates the customer session, product and package; records a unique order; creates a Snap transaction server-side; and restricts the transaction to QRIS via `enabled_payments: ["other_qris"]`.
+- `midtrans-notification` verifies status directly against the Midtrans Get Status API, validates order ID/currency/amount and activates access only for accepted `settlement` or `capture` transactions.
+- Payment notifications are idempotent for orders already marked `PAID`. Subscription upsert uses the database's unique current-subscription key `(user_id, app_code)`, so a paid purchase can update an existing trial/subscription row rather than failing on that unique constraint.
+- `payment-result.html` reads the logged-in user's own order and reports the server-verified order state. The browser redirect itself does not activate a subscription.
+- `jfs_midtrans_payment_orders`, `jfs_app_subscriptions`, and `jfs_app_subscription_plans` have Row Level Security enabled. Customer read policies restrict subscription/order rows to the owning user; active plans are publicly readable.
+- Function source is tracked under `supabase/functions/midtrans-create-checkout/index.ts` and `supabase/functions/midtrans-notification/index.ts`.
 
-## Required configuration before any live payment
+## Required configuration before testing
 
-1. In Supabase Dashboard → Project Settings → Edge Functions → Secrets, set:
-   - `MIDTRANS_SERVER_KEY` = the server key from the matching Midtrans environment.
-   - `MIDTRANS_IS_PRODUCTION` = `false` while testing sandbox; set `true` only after sandbox tests and Midtrans production approval.
-2. Ensure the built-in Supabase Edge Function environment values `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are available to Edge Functions (Supabase supplies these in its hosted environment).
-3. In Midtrans Dashboard → Settings / Configuration → Payment Notification URL, set:
+1. Open Supabase Dashboard → Project Settings → Edge Functions → Secrets.
+2. Set `MIDTRANS_SERVER_KEY` to the **Sandbox Server Key** from the matching Midtrans sandbox account. Do not send this key in chat or commit it to GitHub.
+3. Set `MIDTRANS_IS_PRODUCTION` to `false` for sandbox testing. Keep it false until the full sandbox flow passes and the merchant has production approval.
+4. Confirm the hosted Edge Functions have the built-in `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` values available (Supabase supplies these in its hosted environment).
+5. In the Midtrans sandbox dashboard, configure Payment Notification URL as:
    `https://evtkeyfjgqwarsmlzrkh.supabase.co/functions/v1/midtrans-notification`
-4. Enable QRIS in the Midtrans payment-method configuration and confirm the merchant has been approved for the intended environment.
-5. Ensure the JFS AI app has an authenticated user session. Checkout intentionally rejects anonymous orders.
+6. Enable/approve the `Other QRIS` payment channel in Snap preferences / merchant configuration. The checkout intentionally shows QRIS only; it will not fall back to other payment methods.
+7. Use an authenticated JFS AI test customer account to test checkout.
 
-## Important safety notes
+## Sandbox verification checklist
 
-- Never put `MIDTRANS_SERVER_KEY` or the Supabase service-role key in HTML, GitHub, screenshots, PDF, or customer-visible logs.
-- Keep `MIDTRANS_IS_PRODUCTION=false` until a sandbox transaction has been tested end-to-end.
-- The payment-result redirect is informational only. Subscription activation depends on the server-side status lookup, not on the browser redirect.
-- Do not present a sandbox payment as a real payment or use fabricated payment evidence in the Midtrans onboarding PDF.
+- [ ] Configure the Sandbox Server Key in Supabase Edge Function secrets.
+- [ ] Verify the selected package price and duration in Subscription Control.
+- [ ] Log in with a test customer and open `checkout.html`.
+- [ ] Select a paid package and confirm an order is created.
+- [ ] Confirm the hosted Midtrans checkout displays QRIS.
+- [ ] Complete a sandbox QRIS transaction using Midtrans's current sandbox test flow.
+- [ ] Confirm Midtrans sends the notification and the order status becomes `PAID`.
+- [ ] Confirm one current `jfs_app_subscriptions` row is active for the correct user/product and references the paid order.
+- [ ] Verify pending, cancelled, denied, expired, wrong-amount, or wrong-order events do not grant access.
+- [ ] Test a second paid order for the same user/product and a duplicate notification to confirm renewal and idempotency.
+- [ ] Capture actual screenshots from the deployed browser: package selection, Midtrans QRIS screen, and verified payment result.
+- [ ] Only after sandbox checks pass, follow Midtrans's merchant approval steps and switch to production credentials/settings.
 
-## Verification checklist
+## Current verification status
 
-- [ ] Configure sandbox server key as an Edge Function secret.
-- [ ] Confirm the plan's active price and duration in Subscription Control.
-- [ ] Log in with a test user and open `checkout.html`.
-- [ ] Select a paid product/package and confirm an order is recorded.
-- [ ] Complete a sandbox QRIS payment using Midtrans's current test instructions.
-- [ ] Confirm the webhook is delivered and order status becomes `PAID`.
-- [ ] Confirm exactly one active `jfs_app_subscriptions` row is created for the order.
-- [ ] Verify an unpaid, expired, or cancelled order does not activate a subscription.
-- [ ] Capture screenshots from the deployed browser session showing product selection, package selection, Midtrans payment screen, and the verified result page.
-- [ ] Only after all sandbox checks pass, request/confirm production activation with Midtrans.
+The two Edge Functions have been redeployed and the database structure/RLS/indexes were inspected. The earlier implementation's subscription upsert conflicted with the database's unique `(user_id, app_code)` index; the notification function has been corrected to use that key and to ignore duplicate callbacks for orders already marked paid.
 
-## Known limitation at time of this commit
+**End-to-end payment is not yet verified.** No Midtrans Server Key was provided/configured in this session, the order table currently has no payment orders, and the deployed site could not be reached from this runtime to capture live screenshots. Do not present this setup document as proof of a successful payment. After Sandbox credentials are configured, run the checklist above and capture actual browser screenshots for the merchant PDF.
 
-The server functions are deployed, but no Midtrans Server Key was provided or configured in this task session. Until the key and merchant QRIS approval are configured, the create-checkout function intentionally returns a configuration error and no real payment can be processed. Production checkout is therefore **not yet end-to-end verified**.
+## Security
+
+- Never expose `MIDTRANS_SERVER_KEY` or the Supabase service-role key in frontend code, GitHub, screenshots, PDFs, or customer-visible logs.
+- Keep `MIDTRANS_IS_PRODUCTION=false` until sandbox tests pass and production access is approved.
+- Payment activation depends on the backend's direct Midtrans status verification, not a customer-controlled redirect or request payload.
