@@ -65,6 +65,16 @@ body{background:var(--jfs-bg);color:var(--jfs-text);font-family:Inter,"Plus Jaka
 .light .nav a.jfs-laundry-superadmin:hover{color:#172033}
 @media(max-width:700px){.nav a.jfs-laundry-superadmin{text-align:center}}
 </style>
+
+<style id="jfs-laundry-superadmin-nav">
+/* Keep the cross-repository Super Admin entry visually consistent with platform navigation. */
+.nav a.jfs-laundry-superadmin{display:block;text-decoration:none;color:#AAB7CC;border:1px solid transparent;text-align:left;padding:10px;border-radius:8px;cursor:pointer;font:inherit}
+.nav a.jfs-laundry-superadmin span{display:inline-block;width:25px;text-align:center}
+.nav a.jfs-laundry-superadmin:hover{background:linear-gradient(90deg,#7C3AED26,#2563EB26);color:#fff;border-color:#6D5DFB45;box-shadow:inset 3px 0 #7C3AED,0 4px 16px #00000018}
+.light .nav a.jfs-laundry-superadmin{color:#526078}
+.light .nav a.jfs-laundry-superadmin:hover{background:linear-gradient(90deg,#7C3AED12,#2563EB12);color:#172033;border-color:#8B5CF640}
+@media(max-width:700px){.nav a.jfs-laundry-superadmin{text-align:center}}
+</style>
 </head>
 <body>
 <section id="loginView" class="card login-card">
@@ -86,7 +96,7 @@ body{background:var(--jfs-bg);color:var(--jfs-text);font-family:Inter,"Plus Jaka
   <button onclick="showPage('dashboard',this)"><span>⌂</span><em>Dashboard</em></button><button onclick="showPage('conversations',this)"><span>💬</span><em>Conversations</em></button><button onclick="showPage('automation',this)"><span>⚙️</span><em>Automation</em></button><button onclick="showPage('contacts',this)"><span>👥</span><em>Contacts</em></button><button onclick="showPage('campaigns',this)"><span>📣</span><em>Campaigns</em></button><button onclick="showPage('analytics',this)"><span>📈</span><em>Analytics</em></button>
  </nav>
  <div class="section">SaaS Control</div><nav class="nav">
-  <a class="jfs-laundry-superadmin" href="https://jfsaitechnology.github.io/jfs-laundry-ai/super-admin.html" title="Buka Super Admin JFS Laundry AI"><span>🧺</span><em>Laundry Super Admin</em></a>
+  <a class="jfs-laundry-superadmin" href="https://jfsaitechnology.github.io/jfs-laundry-ai/super-admin.html" target="_blank" rel="noopener noreferrer" title="Buka Super Admin JFS Laundry AI di tab baru; akses tetap diverifikasi oleh sistem autentikasi Laundry"><span>🧺</span><em>Laundry Super Admin ↗</em></a>
  </nav>
  <div class="section">JFS AI Platform</div><nav class="nav">
   <button onclick="showPage('tenants',this)"><span>🏢</span><em>Tenants</em></button><button onclick="showPage('agents',this)"><span>🤖</span><em>AI Agents</em></button><button onclick="showPage('whatsapp',this)"><span>💬</span><em>WhatsApp</em></button><button onclick="showPage('knowledge',this)"><span>📚</span><em>Knowledge</em></button><button onclick="showPage('booking',this)"><span>📅</span><em>Booking</em></button><button onclick="showPage('sales',this)"><span>💰</span><em>Sales</em></button><button onclick="showPage('license',this)"><span>🔐</span><em>License</em></button><button onclick="location.href='subscription-plans.html'"><span>💳</span><em>Subscription & Harga</em></button><button onclick="showPage('integrations',this)"><span>🔗</span><em>Integrations</em></button><button onclick="showPage('settings',this)"><span>⚙</span><em>Settings</em></button>
