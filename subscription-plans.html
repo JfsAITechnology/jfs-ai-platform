@@ -9,7 +9,7 @@ body{margin:0;background:#0d1117;color:#f8fafc;font:14px Arial}.wrap{max-width:1
 <div id="msg" class="muted">Memeriksa akses admin...</div>
 <script>window.addEventListener('error',function(e){const m=document.getElementById('msg');if(m&&m.textContent==='Memeriksa akses admin...')m.textContent='Gagal menjalankan JavaScript: '+(e.message||'kesalahan tidak diketahui')+'. Muat ulang halaman; bila berulang, kirim pesan ini ke T.'});</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="document.getElementById('msg').textContent='Library Supabase gagal dimuat dari CDN. Coba refresh atau cek koneksi.'"></script><section id="app" hidden><div class="tabs">
-<button class="tab active" data-app="LAUNDRY">🧺 Laundry AI</button><button class="tab" data-app="REKAP-MUATAN">🚚 Rekap Muatan <small>(7 paket)</small></button><button class="tab" data-app="KEUANGAN-PINTAR">💰 Keuangan Pintar</button>
+<button class="tab active" data-app="LAUNDRY">🧺 Laundry AI</button><button class="tab" data-app="REKAP-MUATAN">🚚 Rekap Muatan <small>(7 paket)</small></button><button class="tab" data-app="KEUANGAN-PINTAR">💰 Keuangan Pintar</button><button class="tab" data-app="WHATSAPP-CS">💬 WhatsApp CS <small>(7 paket)</small></button>
 </div><div id="list"></div><h2>📋 Permintaan Subscription</h2><div id="requests"></div><h2>👥 Subscriber</h2><div id="subscribers"></div></section></main>
 <script>
 const JFS_SUPABASE_URL='https://evtkeyfjgqwarsmlzrkh.supabase.co',KEY='sb_publishable_7lGio_RVVgkVASYYyBHQIg_GvL-8ELD';
