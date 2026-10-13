@@ -8,6 +8,7 @@ Supabase project: `evtkeyfjgqwarsmlzrkh`
 ## Implemented
 
 - `checkout.html` requires an existing JFS AI Supabase login and loads active paid packages from `jfs_app_subscription_plans`. The backend validates the selected package and amount.
+- Checkout includes `WHATSAPP-CS` (`JFS AI WhatsApp CS`). Its 30-day trial is registered and active; paid plans remain inactive until a Super Admin sets a positive price and activates them in Subscription Control. The trial/subscription guard uses the shared JFS AI login session for tenant-specific WhatsApp CS URLs.
 - `midtrans-create-checkout` validates the customer session, product and package; records a unique order; creates a Snap transaction server-side; and restricts the transaction to QRIS via `enabled_payments: ["other_qris"]`.
 - `midtrans-notification` verifies status directly against the Midtrans Get Status API, validates order ID/currency/amount and activates access only for accepted `settlement` or `capture` transactions.
 - Payment notifications are idempotent for orders already marked `PAID`. Subscription upsert uses the database's unique current-subscription key `(user_id, app_code)`, so a paid purchase can update an existing trial/subscription row rather than failing on that unique constraint.
