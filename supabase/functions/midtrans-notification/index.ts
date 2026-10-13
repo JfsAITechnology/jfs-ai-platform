@@ -61,10 +61,11 @@ Deno.serve(async (req: Request) => {
     }
 
     const { data: plan, error: planError } = await db
-      .from("jfs_app_subscription_plans").select("id,duration_days,is_active,is_trial,price")
+      .from("jfs_app_subscription_plans").select("id,app_code,duration_days,is_active,is_trial,price")
       .eq("id", order.plan_id).maybeSingle();
     if (planError) throw planError;
     if (!plan || !plan.is_active || plan.is_trial ||
+        !(plan.app_code === order.app_code || plan.app_code === "ALL") ||
         Number(plan.price) !== Number(order.amount) || Number(plan.duration_days) < 1) {
       return reply({ error: "Plan validation failed" }, 409);
     }
