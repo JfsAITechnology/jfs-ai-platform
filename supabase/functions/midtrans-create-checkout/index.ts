@@ -35,7 +35,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const appCode = String(body.app_code ?? "").toUpperCase();
     const planId = String(body.plan_id ?? "");
-    if (!["LAUNDRY", "KEUANGAN-PINTAR", "REKAP-MUATAN"].includes(appCode) || !planId) {
+    if (!["LAUNDRY", "KEUANGAN-PINTAR", "REKAP-MUATAN", "WHATSAPP-CS"].includes(appCode) || !planId) {
       return reply({ error: "Produk atau paket tidak valid." }, 400);
     }
     const { data: plan, error: planError } = await db.from("jfs_app_subscription_plans")
