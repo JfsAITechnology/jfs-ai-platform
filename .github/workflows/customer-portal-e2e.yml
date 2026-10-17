@@ -16,4 +16,13 @@ jobs:
       - run: npm init -y
       - run: npm install -D @playwright/test
       - run: npx playwright install --with-deps chromium
+      - name: Serve the checked-out customer portal
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/customer-portal-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:4173/customer.html > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/customer-portal-http.log
+          exit 1
       - run: npx playwright test tests/customer-portal.spec.mjs
