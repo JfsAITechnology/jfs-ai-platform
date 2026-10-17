@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASE='https://jfsaitechnology.github.io/jfs-ai-platform/customer.html';
+const BASE=process.env.CUSTOMER_PORTAL_BASE || 'http://127.0.0.1:4173/customer.html';
 test('customer landing renders premium hero and new robot', async ({ page }) => {
   await page.goto(BASE, { waitUntil:'networkidle' });
   await expect(page.locator('h1')).toContainText('Bisnis Anda butuh solusi');
@@ -9,7 +9,7 @@ test('customer landing renders premium hero and new robot', async ({ page }) => 
 });
 test('AI selector recommends each service', async ({ page }) => {
   await page.goto(BASE, { waitUntil:'networkidle' });
-  for (const name of ['Keuangan','Laundry','Logistik','Toko']) {
+  for (const name of ['Keuangan','Laundry','Logistik','Toko','WhatsApp CS']) {
     await page.getByRole('button', {name:new RegExp(name)}).click();
     await expect(page.locator('#recommend')).toHaveClass(/show/);
     await expect(page.locator('#recBtn')).toHaveAttribute('href', /.+/);
@@ -18,11 +18,12 @@ test('AI selector recommends each service', async ({ page }) => {
 test('all service CTA destinations are present', async ({ page }) => {
   await page.goto(BASE, { waitUntil:'networkidle' });
   const hrefs=await page.locator('.app .cta a').evaluateAll(as=>as.map(a=>a.href));
-  expect(hrefs).toHaveLength(4);
+  expect(hrefs).toHaveLength(5);
   expect(hrefs.some(x=>x.includes('keuangan-pintar'))).toBeTruthy();
   expect(hrefs.some(x=>x.includes('jfs-laundry-ai'))).toBeTruthy();
   expect(hrefs.some(x=>x.includes('rekap-login.html'))).toBeTruthy();
   expect(hrefs.some(x=>x.includes('ARANE-Elektronik/index.html'))).toBeTruthy();
+  expect(hrefs.some(x=>x.includes('jfs-ai-whatsapp-cs'))).toBeTruthy();
 });
 
 test('JFS AI CS chat is available and founder escalation UI exists', async ({ page }) => {
